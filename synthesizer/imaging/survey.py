@@ -95,7 +95,11 @@ class Instrument:
 
 class Survey:
     """
-    A Survey helper object which defines all the properties of a survey. This enables the defintion of a survey approach and then the production of photometry and/or images based on that instruments/filters making up the survey. This can handle PSFs and depths which vary across bands and intruments.
+    A Survey helper object which defines all the properties of a survey. This
+    enables the defintion of a survey approach and then the production of
+    photometry and/or images based on that instruments/filters making up the
+    survey. This can handle PSFs and depths which vary across bands and
+    instruments.
 
 
     Attributes
@@ -355,7 +359,8 @@ class Survey:
             )
         else:
             # TODO: make a UnknownSpectralType error
-            raise exceptions.InconsistentArguments("Unrecognised spectra_type!")
+            raise exceptions.InconsistentArguments(
+                "Unrecognised spectra_type!")
 
         # Loop over each instrument
         for key in self.instruments:
