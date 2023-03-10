@@ -427,6 +427,41 @@ class SFH:
             else:
                 return 0.0
 
+    class SteveLogNormal(Common):
+        """
+        A log-normal star formation history
+        """
+
+        def __init__(self, parameters):
+            self.name = 'Log Normal'
+            self.parameters = parameters
+            self.peak_age = self.parameters['peak_age'].to('yr').value
+            self.tau = self.parameters['tau']
+            self.max_age = self.parameters['max_age'].to('yr').value
+
+            self.tpeak = self.max_age - self.peak_age
+            self.T0 = np.log(self.tpeak) + self.tau ** 2
+
+        def sfr_(self, age):
+            """ age is lookback time """
+
+            if age < self.max_age:
+                return (1./(self.max_age-age))*np.exp(-(np.log(self.max_age-age)-self.T0)**2/(2*self.tau**2))
+            else:
+                return 0.0
+
+        def sfr_arr(self, age):
+            """ age is lookback time """
+
+            okinds = age < self.max_age
+
+            sfr = np.zeros(age.shape)
+            sfr[okinds] = (1./(self.max_age-age[okinds])) * \
+                np.exp(-(np.log(self.max_age -
+                                age[okinds])-self.T0)**2/(2*self.tau**2))
+
+            return sfr
+
     class LogNormal(Common):
         """
         A log-normal star formation history
@@ -439,8 +474,8 @@ class SFH:
             self.tau = self.parameters['tau']
             self.max_age = self.parameters['max_age'].to('yr').value
 
-            self.tpeak = self.max_age-self.peak_age
-            self.T0 = np.log(self.tpeak)+self.tau**2
+            self.tpeak = self.max_age - self.peak_age
+            self.T0 = np.log(self.tpeak) + self.tau ** 2
 
         def sfr_(self, age):
             """ age is lookback time """

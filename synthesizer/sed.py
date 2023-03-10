@@ -1,5 +1,4 @@
 import numpy as np
-
 from scipy.stats import linregress
 from scipy import integrate
 
@@ -107,7 +106,7 @@ class Sed:
 
         return pstr
 
-    @ property
+    @property
     def _spec_dims(self):
         return np.ndim(self.lnu)
 
