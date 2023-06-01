@@ -1,0 +1,9 @@
+This includes code for generating Synthesizer grids (including cloudy processing) for various AGN models. Available models:
+
+- cloudy basic model
+
+
+- The Feltre16 model (need better name since it's more generic)
+
+
+
