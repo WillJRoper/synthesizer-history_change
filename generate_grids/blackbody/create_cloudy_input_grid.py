@@ -115,9 +115,9 @@ def create_cloudy_input(model_name, log10T, abundances, output_dir='./', **kwarg
     # cinput.append('element off limit -7') # should speed up the code
 
     # # --- Define the ionising luminosity
-    log10Q = np.log10(calculate_Q_from_U(10**log10U, 10**params["log10n_H"]))
-    cinput.append(f'Q(H) = {log10Q}\n')
-    # # cinput.append(f'ionization parameter = {log10U} log\n')
+    # log10Q = np.log10(calculate_Q_from_U(10**log10U, 10**params["log10n_H"]))
+    # cinput.append(f'Q(H) = {log10Q}\n')
+    cinput.append(f'ionization parameter = {log10U} log\n')
 
     # add background continuum
     if params['cosmic_rays']:
