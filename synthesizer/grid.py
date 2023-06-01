@@ -216,10 +216,12 @@ class Grid:
         # Add the content of the summary to the string to be printed
         pstr += "-"*30 + "\n"
         pstr += f"SUMMARY OF GRID" + "\n"
-        pstr += f"log10ages: {self.log10ages}\n"
-        pstr += f"metallicities: {self.metallicities}\n"
-        for k, v in self.parameters.items():
-            pstr += f"{k}: {v} \n"
+        pstr += f"name: {self.grid_name}" + "\n"
+        pstr += f"dir: {self.grid_dir}" + "\n"
+        pstr += f"axes: {self.axes}\n"
+
+        for k in self.axes:
+            pstr += f"  {k}: {self.bin_centres[k]}\n"
         if self.spectra:
             pstr += f"spectra: {list(self.spectra.keys())}\n"
         if self.lines:
