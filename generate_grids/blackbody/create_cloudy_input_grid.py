@@ -174,39 +174,44 @@ if __name__ == "__main__":
     log10Zs = np.arange(-5., -1., 0.5)
 
     # log10U
-    log10Us = np.array([-4., -3, -2, -1., 0.])
+    log10Us = np.array([-4., -3, -2, -1., 0., 1])
+
+    # log10n_H
+    log10nHs = np.array([0., 1., 2., 3., 4.])
 
     # total number of models
-    N = len(log10Ts)*len(log10Zs)*len(log10Us)
+    N = len(log10Ts)*len(log10Zs)*len(log10Us)*len(log10nHs)
 
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'w') as hf:
 
         # add attribute with the grid axes for future when using >2D grid or AGN grids
-        hf.attrs['grid_axes'] = ['log10T', 'log10Z', 'log10U']
+        hf.attrs['grid_axes'] = ['log10T', 'log10Z', 'log10U', 'log10nHs']
 
         hf['log10U'] = log10Us
         hf['log10T'] = log10Ts
         hf['log10Z'] = log10Zs
+        hf['log10nHs'] = log10nHs
 
-    # for iT, log10T in enumerate(log10Ts):
-    #     for iZ, log10Z in enumerate(log10Zs):
-    #         for iU, log10U in enumerate(log10Us):
-    #
-    #             model_name = f"{iT}_{iZ}_{iU}"
-    #
-    #             # this will need changing
-    #             abundances = Abundances(10**log10Z)
-    #
-    #             create_cloudy_input(model_name, log10T, abundances,
-    #                                 output_dir=output_dir, log10U=log10U)
-    #
-    #             with open(f"{output_dir}/input_names.txt", "a") as myfile:
-    #                 myfile.write(f'{model_name}\n')
-    #
-    # if machine == 'apollo':
-    #     apollo_submission_script(N, output_dir, cloudy)
-    # elif machine == 'cosma7':
-    #     cosma7_submission_script(N, output_dir, cloudy,
-    #                              cosma_project='cosma7',
-    #                              cosma_account='dp004')
+    for iZ, log10Z in enumerate(log10Zs):
+
+        abundances = Abundances(10**log10Z)
+
+        for iT, log10T in enumerate(log10Ts):
+            for iU, log10U in enumerate(log10Us):
+                for inH, log10nH in enumerate(log10nHs):
+    
+                    model_name = f"{iT}_{iZ}_{iU}_{inH}"
+        
+                    create_cloudy_input(model_name, log10T, abundances,
+                                        output_dir=output_dir, log10U=log10U)
+        
+                    with open(f"{output_dir}/input_names.txt", "a") as myfile:
+                        myfile.write(f'{model_name}\n')
+    
+    if machine == 'apollo':
+        apollo_submission_script(N, output_dir, cloudy)
+    elif machine == 'cosma7':
+        cosma7_submission_script(N, output_dir, cloudy,
+                                 cosma_project='cosma7',
+                                 cosma_account='dp004')
