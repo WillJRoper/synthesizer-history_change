@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
             # Calculate the photometry
             phot = f.apply_filter(seds[z]._fnu,
-                                  lam=seds[z].lamz)
+                                  nu=seds[z].nuz)
 
             # Plot the transmitted portion of the SED
             if ind == len(zs) - 1:
