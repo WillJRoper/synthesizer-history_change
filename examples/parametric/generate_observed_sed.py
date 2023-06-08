@@ -67,4 +67,4 @@ if __name__ == '__main__':
         print(f'{filter}: {flux:.2f}')
 
     # make plot of observed including broadband fluxes (if filter collection object given)
-    galaxy.plot_observed_spectra(cosmo, z, fc=fc, spectra_to_plot=['total'])
+    galaxy.plot_observed_spectra(cosmo, z, fc=fc, spectra_to_plot=['total'], show = True)

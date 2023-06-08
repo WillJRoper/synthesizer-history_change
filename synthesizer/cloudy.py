@@ -53,9 +53,6 @@ class ShapeCommands:
     
     """
 
-
-
-
     def table_sed(model_name, lam, lnu, output_dir='./'):
         
         """
@@ -107,6 +104,35 @@ class ShapeCommands:
         # collect cloudy shape commands
         shape_commands = []
         shape_commands.append(f'table SED "{model_name}.sed" \n')
+
+        return shape_commands
+    
+    def cloudy_agn(TBB, aox=-1.4, auv=-0.5, ax=-1.):
+        
+        """
+        A function for specifying the cloudy AGN model. See 6.2 Hazy1.pdf.
+
+        Arguments
+        ----------
+        model_name: str
+            User defined name of the model used for cloudy inputs and outputs.
+        TBB: float
+            The Big Bump temperature
+        aox: float
+
+        auv: float
+
+        ax: float
+            
+        Returns
+        -------
+        list
+            a list of strings with the cloudy input commands
+        """
+
+        # collect cloudy shape commands
+        shape_commands = []
+        shape_commands.append(f'AGN T ={TBB} k, a(ox) = {aox}, a(uv)= {auv} a(x)={ax} \n')
 
         return shape_commands
 
