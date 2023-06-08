@@ -305,7 +305,7 @@ if __name__ == "__main__":
         print(f'  qsub -t 1:{len(failed_list)}  run_grid.job')
 
         # replace input_names with list of failed runs
-        with open(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/input_names.txt", "a") as myfile:
+        with open(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/input_names.txt", "w") as myfile:
             myfile.write('\n'.join(failed_list))
 
     # if not failed, go ahead and add spectra and lines
