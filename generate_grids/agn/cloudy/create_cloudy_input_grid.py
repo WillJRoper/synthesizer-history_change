@@ -87,33 +87,34 @@ if __name__ == "__main__":
         except yaml.YAMLError as exc:
             print(exc)
 
-    if args.dry_run:
-        print(machine)
-        print(grid_name)
-        print(output_dir)
-        print(cloudy)
-        print(cloudy_params)
-        print(grid_params)
-        
-        
-        grid_axes = list(grid_params.keys())
-        print(grid_axes)
+    print(machine)
+    print(grid_name)
+    print(output_dir)
+    print(cloudy)
+    print(cloudy_params)
+    print(grid_params)
+    
+    
+    grid_axes = list(grid_params.keys())
+    print(grid_axes)
 
-        n_axes = len(grid_axes)
+    n_axes = len(grid_axes)
 
-        grid = np.array(np.meshgrid(*[np.array(v) for k,v in grid_params.items()]))
+    grid = np.array(np.meshgrid(*[np.array(v) for k,v in grid_params.items()]))
 
-        # determine number of models
-        n = 1
-        for dim in np.shape(grid): n *= dim
-        n /= len(grid)
-        n = int(n)
+    # determine number of models
+    N = 1
+    for dim in np.shape(grid): N *= dim
+    N /= len(grid)
+    N = int(N)
 
-        print(f'number of models to run: {n}')
+    print(f'number of models to run: {N}')
 
-        grid_list = grid.T.reshape(n, n_axes)
+    grid_list = grid.T.reshape(N, n_axes)
 
-        print(grid_list)
+    print(grid_list)
+
+
 
     if not args.dry_run:
 
@@ -125,7 +126,7 @@ if __name__ == "__main__":
 
         
         # open the new grid
-        with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'w') as hf:
+        with h5py.File(f'{args.synthesizer_data_dir}/grids/agn_{grid_name}.hdf5', 'w') as hf:
 
             # add attribute with the grid axes
             hf.attrs['grid_axes'] = grid_axes
@@ -141,7 +142,7 @@ if __name__ == "__main__":
 
         params = cloudy_params | grid_params
 
-        print(params)
+        print(i, params)
 
         if not args.dry_run:
 
@@ -155,10 +156,10 @@ if __name__ == "__main__":
             # write out input file
             with open(f"{output_dir}/input_names.txt", "a") as myfile:
                 myfile.write(f'{i}\n')
-        
-            if machine == 'apollo':
-                apollo_submission_script(N, output_dir, cloudy)
-            elif machine == 'cosma7':
-                cosma7_submission_script(N, output_dir, cloudy,
-                                        cosma_project='cosma7',
-                                        cosma_account='dp004')
+
+    if machine == 'apollo':
+        apollo_submission_script(N, output_dir, cloudy)
+    elif machine == 'cosma7':
+        cosma7_submission_script(N, output_dir, cloudy,
+                                cosma_project='cosma7',
+                                cosma_account='dp004')
