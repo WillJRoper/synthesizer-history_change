@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
             # create shape commands
             TBB = 10**params['log10T']
-            cinputs = ShapeCommands.cloudy_agn(TBB)
+            shape_commands = ShapeCommands.cloudy_agn(TBB)
             
             # create input file
             create_cloudy_input(str(i), shape_commands, abundances, output_dir=output_dir, **params)
