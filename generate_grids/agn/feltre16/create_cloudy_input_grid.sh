@@ -2,7 +2,7 @@
 
 MACHINE="apollo"
 SYNTHESIZER_DATA_DIR="/research/astrodata/highz/synthesizer/"
-GRID_NAME="cloudy"
+GRID_NAME="feltre16"
 CLOUDY_PARAMS="default.yaml"
 CLOUDY=$CLOUDY17
 
