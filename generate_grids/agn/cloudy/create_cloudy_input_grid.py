@@ -146,6 +146,8 @@ if __name__ == "__main__":
 
         if not args.dry_run:
 
+            abundances = Abundances(10**params['log10Z'])
+
             # create shape commands
             TBB = 10**params['log10T']
             shape_commands = ShapeCommands.cloudy_agn(TBB)
