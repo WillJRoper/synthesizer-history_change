@@ -288,7 +288,7 @@ if __name__ == "__main__":
                                                   'for a given grid.'))
 
     parser.add_argument("-synthesizer_data_dir", type=str, required=True) # path to synthesizer_data_dir
-    parser.add_argument("-grid", "--grid", type=str, required=True,))
+    parser.add_argument("-grid", "--grid", type=str, required=True)
 
     args = parser.parse_args()
 
