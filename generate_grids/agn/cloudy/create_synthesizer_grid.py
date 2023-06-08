@@ -298,6 +298,8 @@ if __name__ == "__main__":
     # check cloudy runs
     failed_list = check_cloudy_runs(grid_name, synthesizer_data_dir)
 
+    print(failed_list)
+
     # if failed prompt to re-run
     if len(failed_list)>0:
 
