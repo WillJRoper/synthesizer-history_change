@@ -35,12 +35,12 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'r') as hf:
 
-        grid_axes = list(grid_params.keys())
+        grid_axes = hf.attrs['grid_axes']
         print(grid_axes)
 
         n_axes = len(grid_axes)
 
-        grid = np.array(np.meshgrid(*[np.array(hf[grid_axis][:]) for grid_axis in hf.attrs['grid_axes']]))
+        grid = np.array(np.meshgrid(*[np.array(hf[grid_axis][:]) for grid_axis in grid_axes]))
 
         # determine number of models
         N = 1
