@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
         # replace input_names with list of failed runs
         with open(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/input_names.txt", "w") as myfile:
-            myfile.write('\n'.join(failed_list))
+            myfile.write('\n'.join(map(list, failed_list)))
 
     # if not failed, go ahead and add spectra and lines
     # else:
