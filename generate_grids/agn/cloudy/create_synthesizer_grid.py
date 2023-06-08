@@ -58,7 +58,7 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
 
         for i, grid_params_ in enumerate(grid_list):
 
-            infile = f'{synthesizer_data_dir}/agn/{grid_name}/{i}'
+            infile = f'{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}'
 
             failed = False
 
