@@ -113,10 +113,17 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
                     failed = True
 
             if failed:
-                print(i)    
+                print(i, model_list[i])    
                 failed_list.append(i)
 
         return failed_list
+
+
+
+
+
+
+
 
 
 def add_spectra(grid_name, synthesizer_data_dir):
