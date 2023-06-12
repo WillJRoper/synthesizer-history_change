@@ -225,6 +225,9 @@ def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
         if 'lines' in hf:
             del hf['lines']
 
+        # define spectra
+        spectra = hf['spectra']
+
         # create group for holding lines
         lines = hf.create_group('lines')
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
