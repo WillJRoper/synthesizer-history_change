@@ -5,6 +5,21 @@ import unyt
 
 import unyt
 from unyt import c, h, nJy, erg, s, Hz, pc, angstrom, eV,  unyt_array
+from typing import Iterable 
+
+
+
+def flatten(items):
+    """
+    Flatten a list containing other lists, strings etc.
+    """
+    for x in items:
+        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            for sub_x in flatten(x):
+                yield sub_x
+        else:
+            yield x
+
 
 def write_data_h5py(filename, name, data, overwrite=False):
     check = check_h5py(filename, name)
