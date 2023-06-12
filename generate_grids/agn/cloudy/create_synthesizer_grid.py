@@ -169,13 +169,14 @@ def add_spectra(grid_name, synthesizer_data_dir):
 
              # for an arbitrary grid, we should normalise by the bolometric luminosity of the incident spectra
             norm = np.trapz(spec_dict['incident'], x=nu)
+            print(indices)
             normalisation[*indices] = norm
 
             # save the normalised spectrum to the correct grid point 
             for spec_name in spec_names:
                 spectra[spec_name][*indices] = spec_dict[spec_name] / norm
 
-        return normalisation
+    return normalisation
 
 
 def get_default_line_list(interesting=True):
