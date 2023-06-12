@@ -93,7 +93,7 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
         # list of failed models
         failed_list = []
 
-        for i, grid_params_ in enumerate(grid_list):
+        for i, grid_params_ in enumerate(model_list):
 
             infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
 
