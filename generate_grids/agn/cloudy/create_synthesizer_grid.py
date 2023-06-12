@@ -162,7 +162,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
         # array for holding the normalisation which is calculated below and used by lines
         normalisation =  np.zeros(shape)
 
-        print(normalisation[*[0,1,2,3]])
+        print(normalisation[0,1,2,3])
 
         for i, indices in enumerate(index_list):
 
