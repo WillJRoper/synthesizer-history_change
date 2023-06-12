@@ -164,6 +164,8 @@ def add_spectra(grid_name, synthesizer_data_dir):
 
         for i, indices in enumerate(index_list):
 
+            indices = tuple(indices)
+
             # define the infile
             infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
 
@@ -174,11 +176,13 @@ def add_spectra(grid_name, synthesizer_data_dir):
             norm = np.trapz(spec_dict['incident'], x=nu)
 
             # save normalisation for later use (rescaling lines)
-            normalisation[*indices] = norm
+            normalisation[indices] = norm
+
+            print(indices, normalisation[indices])
 
             # save the normalised spectrum to the correct grid point 
             for spec_name in spec_names:
-                spectra[spec_name][*indices] = spec_dict[spec_name] / norm
+                spectra[spec_name][indices] = spec_dict[spec_name] / norm
 
     return normalisation
 
