@@ -174,8 +174,8 @@ def add_spectra(grid_name, synthesizer_data_dir):
             norm = np.trapz(spec_dict['incident'], x=nu)
             # print(indices, norm, type(indices))
 
-            print(normalisation.shape, type(normalisation))
-            print(i.shape, type(i))
+            print(type(normalisation), normalisation.shape)
+            print(type(indices), indices.shape)
 
             # print(normalisation[*indices])
             # normalisation[*indices] = norm
