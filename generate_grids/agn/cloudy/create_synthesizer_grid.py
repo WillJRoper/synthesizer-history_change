@@ -311,11 +311,15 @@ if __name__ == "__main__":
     #if not failed, go ahead and add spectra and lines
     else:
         
+        print('- passed checks')
+
         # add spectra
         add_spectra(grid_name, synthesizer_data_dir)
+        print('- spectra added')
 
         # get list of lines
         lines_to_include = get_default_line_list()
 
         # add lines
         add_lines(grid_name, synthesizer_data_dir, lines_to_include)
+        print('- lines added')
