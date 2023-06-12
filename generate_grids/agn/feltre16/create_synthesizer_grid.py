@@ -107,9 +107,9 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
             
             # if they exist also check they have size >0
             if not failed:
-                if os.path.getsize(infile+'.cont') == 0:
+                if os.path.getsize(infile+'.cont') < 1000:
                     failed = True
-                if os.path.getsize(infile+'.lines') == 0:
+                if os.path.getsize(infile+'.lines') < 1000:
                     failed = True
 
             if failed:
