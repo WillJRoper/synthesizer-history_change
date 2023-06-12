@@ -160,9 +160,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
             spectra[spec_name] = np.zeros((*shape, nlam))
 
         # array for holding the normalisation which is calculated below and used by lines
-        normalisation =  np.zeros(shape)
-
-        print(normalisation[0,1,2,3])
+        normalisation = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
@@ -172,15 +170,15 @@ def add_spectra(grid_name, synthesizer_data_dir):
             # read the continuum file containing the spectra 
             spec_dict = read_continuum(infile, return_dict=True)
 
-             # for an arbitrary grid, we should normalise by the bolometric luminosity of the incident spectra
+            # for an arbitrary grid, we should normalise by the bolometric luminosity of the incident spectra
             norm = np.trapz(spec_dict['incident'], x=nu)
-        
-            print(normalisation[*indices])
-            # normalisation[*indices] = norm
+
+            # save normalisation for later use (rescaling lines)
+            normalisation[*indices] = norm
 
             # save the normalised spectrum to the correct grid point 
-            # for spec_name in spec_names:
-            #     spectra[spec_name][*indices] = spec_dict[spec_name] / norm
+            for spec_name in spec_names:
+                spectra[spec_name][*indices] = spec_dict[spec_name] / norm
 
     return normalisation
 
@@ -350,5 +348,5 @@ if __name__ == "__main__":
         normalisation = add_spectra(grid_name, synthesizer_data_dir)
 
         # add lines
-        lines_to_include = get_default_line_list()
-        add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include)
+        # lines_to_include = get_default_line_list()
+        # add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include)
