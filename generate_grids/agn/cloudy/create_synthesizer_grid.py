@@ -227,6 +227,7 @@ def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
 
         # define spectra
         spectra = hf['spectra']
+        lam = spectra['lam'][:]
 
         # create group for holding lines
         lines = hf.create_group('lines')
