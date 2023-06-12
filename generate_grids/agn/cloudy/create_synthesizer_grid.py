@@ -42,7 +42,7 @@ def get_grid_properties(hf, verbose = True):
     if verbose: print(f'shape: {shape}')
 
     # determine number of models
-    n_models = np.prod(shape)
+    n_models = int(np.prod(shape))
     if verbose: print(f'number of models to run: {n_models}')
 
     # create the mesh of the grid
