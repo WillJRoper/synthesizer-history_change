@@ -159,7 +159,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
         # array for holding the normalisation which is calculated below and used by lines
         normalisation =  np.zeros(shape)
 
-        for i, index_list in enumerate(index_list):
+        for i, indices in enumerate(index_list):
 
             # define the infile
             infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
@@ -169,11 +169,11 @@ def add_spectra(grid_name, synthesizer_data_dir):
 
              # for an arbitrary grid, we should normalise by the bolometric luminosity of the incident spectra
             norm = np.trapz(spec_dict['incident'], x=nu)
-            normalisation[*index_list] = norm
+            normalisation[*indices] = norm
 
             # save the normalised spectrum to the correct grid point 
             for spec_name in spec_names:
-                spectra[spec_name][*index_list] = spec_dict[spec_name] / norm
+                spectra[spec_name][*indices] = spec_dict[spec_name] / norm
 
         return normalisation
 
@@ -270,14 +270,14 @@ def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
             lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
             lines[f'{line_id}/continuum'] = np.zeros(shape)
 
-        for i, index_list in enumerate(index_list):
+        for i, indices in enumerate(index_list):
 
             # define the infile
             infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
 
             # get TOTAL continuum spectra
-            nebular_continuum = spectra['nebular'][*index_list] - spectra['linecont'][*index_list]
-            continuum = spectra['transmitted'][*index_list] + nebular_continuum
+            nebular_continuum = spectra['nebular'][*indices] - spectra['linecont'][*indices]
+            continuum = spectra['transmitted'][*indices] + nebular_continuum
 
             # get line quantities
             id, blend, wavelength, intrinsic, emergent = read_lines(infile)
@@ -293,18 +293,18 @@ def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
                 line.attrs['wavelength'] = wavelength_
 
                 # calculate line luminosity and save it. Uses normalisation from spectra.
-                line['luminosity'][*index_list] = 10**(emergent_)/normalisation[*index_list]  # erg s^-1
+                line['luminosity'][*indices] = 10**(emergent_)/normalisation[*indices]  # erg s^-1
                 
                 # calculate stellar continuum at the line wavelength and save it. 
-                line['stellar_continuum'][*index_list] = np.interp(
-                    wavelength_, lam, spectra['transmitted'][*index_list])  # erg s^-1 Hz^-1
+                line['stellar_continuum'][*indices] = np.interp(
+                    wavelength_, lam, spectra['transmitted'][*indices])  # erg s^-1 Hz^-1
                 
                 # calculate nebular continuum at the line wavelength and save it. 
-                line['nebular_continuum'][*index_list] = np.interp(
+                line['nebular_continuum'][*indices] = np.interp(
                     wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
                 
                 # calculate total continuum at the line wavelength and save it. 
-                line['continuum'][*index_list] = np.interp(
+                line['continuum'][*indices] = np.interp(
                     wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
