@@ -178,8 +178,6 @@ def add_spectra(grid_name, synthesizer_data_dir):
             # save normalisation for later use (rescaling lines)
             normalisation[indices] = norm
 
-            print(indices, normalisation[indices])
-
             # save the normalised spectrum to the correct grid point 
             for spec_name in spec_names:
                 spectra[spec_name][indices] = spec_dict[spec_name] / norm
@@ -200,121 +198,83 @@ def get_default_line_list(interesting=True):
     return line_list
 
 
-def get_line_list(grid_name, synthesizer_data_dir, threshold_line='H 1 4862.69A', relative_threshold=2.0):
-    """
-    Get a list of lines meeting some threshold at the reference age and metallicity
 
-    NOTE: the updated base grid HDF5 file must have been created first.
-    NOTE: changing the threshold to 2.5 doubles the number of lines and produces repeats that will need to be merged.
+
+
+def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
+    """
+    Open cloudy lines and add them to the HDF5 grid
 
     Parameters
     ----------
-    grid_name : str
+    grid_name: str
         Name of the grid.
-    synthesizer_data_dir : str
+    synthesizer_data_dir: str
         Directory where synthesizer data is kept.
-    threshold : float
-        The log threshold relative to Hbeta for which lines should be kept.
-        Default = 2.0 which implies L > 0.01 * L_Hbeta
-
-    Returns
-    ----------
-    list
-        list of the lines meeting the threshold criteria
+    dlog10Q
+        The difference between the original and cloudy log10Q used for rescaling the cloudy spectra
     """
 
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'a') as hf:
 
-        # get the reference metallicity and age grid point
-        ia = hf.attrs['ia_ref']
-        iZ = hf.attrs['iZ_ref']
+        # Get the properties of the grid including the dimensions etc.
+        axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(hf)
 
-    reference_filename = f'{synthesizer_data_dir}/cloudy/{grid_name}/{ia}_{iZ}'
+        # delete lines group if it already exists
+        if 'lines' in hf:
+            del hf['lines']
 
-    cloudy_ids, blends, wavelengths, intrinsic, emergent = read_lines(
-        reference_filename)
+        # create group for holding lines
+        lines = hf.create_group('lines')
+        # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
-    threshold = emergent[cloudy_ids == threshold_line] - relative_threshold
+        # set up output arrays
+        for line_id in lines_to_include:
+            lines[f'{line_id}/luminosity'] = np.zeros(shape)
+            lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/continuum'] = np.zeros(shape)
 
-    s = (emergent > threshold) & (blends == False) & (wavelengths < 50000)
+        for i, indices in enumerate(index_list):
 
-    line_list = cloudy_ids[s]
+            # convert indices array to tuple
+            indices = tuple(indices)
 
-    # print(f'number of lines: {np.sum(s)}')
-    # print(line_list)
-    # print(len(list(set(line_list))))
+            # define the infile
+            infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
 
-    return line_list
+            # get TOTAL continuum spectra
+            nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
+            continuum = spectra['transmitted'][indices] + nebular_continuum
 
+            # get line quantities
+            id, blend, wavelength, intrinsic, emergent = read_lines(infile)
 
-# def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
-#     """
-#     Open cloudy lines and add them to the HDF5 grid
+            # identify lines we want to keep
+            s = np.nonzero(np.in1d(id, np.array(lines_to_include)))[0]
 
-#     Parameters
-#     ----------
-#     grid_name: str
-#         Name of the grid.
-#     synthesizer_data_dir: str
-#         Directory where synthesizer data is kept.
-#     dlog10Q
-#         The difference between the original and cloudy log10Q used for rescaling the cloudy spectra
-#     """
+            for id_, wavelength_, emergent_ in zip(id[s], wavelength[s], emergent[s]):
 
-#     # open the new grid
-#     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'a') as hf:
+                line = lines[id_]
 
-#         # Get the properties of the grid including the dimensions etc.
-#         axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(hf)
+                # save line wavelength
+                line.attrs['wavelength'] = wavelength_
 
-#         # get list of lines
-#         lines = hf.create_group('lines')
-#         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
-
-#         # set up output arrays
-#         for line_id in lines_to_include:
-#             lines[f'{line_id}/luminosity'] = np.zeros(shape)
-#             lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
-#             lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
-#             lines[f'{line_id}/continuum'] = np.zeros(shape)
-
-#         for i, indices in enumerate(index_list):
-
-#             # define the infile
-#             infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
-
-#             # get TOTAL continuum spectra
-#             nebular_continuum = spectra['nebular'][*indices] - spectra['linecont'][*indices]
-#             continuum = spectra['transmitted'][*indices] + nebular_continuum
-
-#             # get line quantities
-#             id, blend, wavelength, intrinsic, emergent = read_lines(infile)
-
-#             # identify lines we want to keep
-#             s = np.nonzero(np.in1d(id, np.array(lines_to_include)))[0]
-
-#             for id_, wavelength_, emergent_ in zip(id[s], wavelength[s], emergent[s]):
-
-#                 line = lines[id_]
-
-#                 # save line wavelength
-#                 line.attrs['wavelength'] = wavelength_
-
-#                 # calculate line luminosity and save it. Uses normalisation from spectra.
-#                 line['luminosity'][*indices] = 10**(emergent_)/normalisation[*indices]  # erg s^-1
+                # calculate line luminosity and save it. Uses normalisation from spectra.
+                line['luminosity'][indices] = 10**(emergent_)/normalisation[indices]  # erg s^-1
                 
-#                 # calculate stellar continuum at the line wavelength and save it. 
-#                 line['stellar_continuum'][*indices] = np.interp(
-#                     wavelength_, lam, spectra['transmitted'][*indices])  # erg s^-1 Hz^-1
+                # calculate stellar continuum at the line wavelength and save it. 
+                line['stellar_continuum'][indices] = np.interp(
+                    wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
                 
-#                 # calculate nebular continuum at the line wavelength and save it. 
-#                 line['nebular_continuum'][*indices] = np.interp(
-#                     wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
+                # calculate nebular continuum at the line wavelength and save it. 
+                line['nebular_continuum'][indices] = np.interp(
+                    wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
                 
-#                 # calculate total continuum at the line wavelength and save it. 
-#                 line['continuum'][*indices] = np.interp(
-#                     wavelength_, lam, continuum)  # erg s^-1 Hz^-1
+                # calculate total continuum at the line wavelength and save it. 
+                line['continuum'][indices] = np.interp(
+                    wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
 if __name__ == "__main__":
@@ -351,6 +311,8 @@ if __name__ == "__main__":
         # add spectra
         normalisation = add_spectra(grid_name, synthesizer_data_dir)
 
+        # get list of lines
+        lines_to_include = get_default_line_list()
+
         # add lines
-        # lines_to_include = get_default_line_list()
-        # add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include)
+        add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include)
