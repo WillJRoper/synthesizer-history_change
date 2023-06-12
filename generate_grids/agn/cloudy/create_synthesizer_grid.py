@@ -160,7 +160,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
             spectra[spec_name] = np.zeros((*shape, nlam))
 
         # array for holding the normalisation which is calculated below and used by lines
-        normalisation = np.zeros(shape)
+        spectra['normalisation'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
@@ -176,13 +176,11 @@ def add_spectra(grid_name, synthesizer_data_dir):
             norm = np.trapz(spec_dict['incident'][::-1], x=nu[::-1])
 
             # save normalisation for later use (rescaling lines)
-            normalisation[indices] = norm
+            spectra['normalisation'][indices] = norm
 
             # save the normalised spectrum to the correct grid point 
             for spec_name in spec_names:
                 spectra[spec_name][indices] = spec_dict[spec_name] / norm
-
-    return normalisation
 
 
 def get_default_line_list(interesting=True):
@@ -201,7 +199,7 @@ def get_default_line_list(interesting=True):
 
 
 
-def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
+def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
     """
     Open cloudy lines and add them to the HDF5 grid
 
@@ -227,7 +225,8 @@ def add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include):
 
         # define spectra
         spectra = hf['spectra']
-        lam = spectra['lam'][:]
+        normalisation = spectra['normalisation'][:]
+        lam = spectra['wavelength'][:]
 
         # create group for holding lines
         lines = hf.create_group('lines')
@@ -313,10 +312,10 @@ if __name__ == "__main__":
     else:
         
         # add spectra
-        normalisation = add_spectra(grid_name, synthesizer_data_dir)
+        add_spectra(grid_name, synthesizer_data_dir)
 
         # get list of lines
         lines_to_include = get_default_line_list()
 
         # add lines
-        add_lines(grid_name, synthesizer_data_dir, normalisation, lines_to_include)
+        add_lines(grid_name, synthesizer_data_dir, lines_to_include)
