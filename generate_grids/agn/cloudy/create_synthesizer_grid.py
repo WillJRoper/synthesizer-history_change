@@ -144,6 +144,9 @@ def add_spectra(grid_name, synthesizer_data_dir):
         # read first spectra from the first grid point to get length and wavelength grid
         lam = read_wavelength(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/0")
 
+        if 'spectra' in hf:
+            delete hf['spectra']
+
         spectra = hf.create_group('spectra')  # create a group holding the spectra in the grid file
         spectra.attrs['spec_names'] = spec_names  # save list of spectra as attribute
 
