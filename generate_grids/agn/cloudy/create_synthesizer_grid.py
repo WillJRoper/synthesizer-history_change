@@ -18,6 +18,58 @@ import h5py
 import yaml
 
 
+
+
+
+def get_grid_properties(hf, verbose = True):
+
+
+    """ 
+    Get the properties of the grid including the dimensions etc.
+    
+    """
+
+    # the grid axes
+    axes = hf.attrs['grid_axes']
+    if verbose: print(f'axes: {axes}')
+
+    # number of axes
+    n_axes = len(axes)
+    if verbose: print(f'number of axes: {n_axes}')
+
+    # the shape of the grid (useful for creating outputs)
+    shape = (len(hf[axis][:]) for axis in axes)
+    if verbose: print(f'shape: {shape}')
+
+    # determine number of models
+    n_models = np.prod(shape)
+    if verbose: print(f'number of models to run: {n_models}')
+
+    # create the mesh of the grid
+    mesh = np.array(np.meshgrid(*[np.array(hf[axis][:]) for axis in axes]))
+
+    # create the list of the models 
+    model_list = mesh.T.reshape(n_models, n_axes)
+    if verbose: 
+        print('model list:')
+        print(model_list)
+
+    # create a list of the indices
+
+    index_mesh = np.array(np.meshgrid(*[range(n) for n in shape]))
+
+    index_list =  index_mesh.T.reshape(n_models, n_axes)
+    if verbose: 
+        print('index list:')
+        print(index_list)
+
+
+    return axes, n_axes, shape, n_models, mesh, model_list, index_list
+
+
+
+
+
 def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
     """
     Check that all the cloudy runs have run properly
@@ -35,25 +87,10 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'r') as hf:
 
-        grid_axes = hf.attrs['grid_axes']
-        print(grid_axes)
+        # Get the properties of the grid including the dimensions etc.
+        axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(hf)
 
-        n_axes = len(grid_axes)
-
-        grid = np.array(np.meshgrid(*[np.array(hf[grid_axis][:]) for grid_axis in grid_axes]))
-
-        # determine number of models
-        N = 1
-        for dim in np.shape(grid): N *= dim
-        N /= len(grid)
-        N = int(N)
-
-        print(f'number of models to run: {N}')
-
-        grid_list = grid.T.reshape(N, n_axes)
-
-        print(grid_list)
-
+        # list of failed models
         failed_list = []
 
         for i, grid_params_ in enumerate(grid_list):
@@ -101,14 +138,9 @@ def add_spectra(grid_name, synthesizer_data_dir):
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'a') as hf:
 
-        # --- short hand for later
-        metallicities = hf['metallicities']
-        log10ages = hf['log10ages']
+        
 
-        nZ = len(metallicities)  # number of metallicity grid points
-        na = len(log10ages)  # number of age grid points
-
-        # --- read first spectra from the first grid point to get length and wavelength grid
+        # read first spectra from the first grid point to get length and wavelength grid
         lam = read_wavelength(f'{synthesizer_data_dir}/cloudy/{grid_name}/0_0')
 
         spectra = hf.create_group('spectra')  # create a group holding the spectra in the grid file
