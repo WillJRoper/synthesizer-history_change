@@ -116,12 +116,13 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
                 print(i, model_list[i])    
                 failed_list.append(i)
 
-            # if replace is specified, instead replace the grid point
-            if replace:
-                shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.lines", infile+'.lines')
-                shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.cont", infile+'.cont')
-                
-
+                # if replace is specified, instead replace the grid point
+                if replace:
+                    shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.lines", infile+'.lines')
+                    shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.cont", infile+'.cont')
+                    
+        if replace:
+            failed_list = []
 
 
         return failed_list
