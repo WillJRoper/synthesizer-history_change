@@ -58,7 +58,7 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
 
         for i, grid_params_ in enumerate(model_list):
 
-            infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
+            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
 
             failed = False
 
@@ -81,8 +81,8 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
 
                 # if replace is specified, instead replace the grid point
                 if replace:
-                    shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.lines", infile+'.lines')
-                    shutil.copyfile(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i-1}.cont", infile+'.cont')
+                    shutil.copyfile(f"{synthesizer_data_dir}/cloudy/{grid_name}/{i-1}.lines", infile+'.lines')
+                    shutil.copyfile(f"{synthesizer_data_dir}/cloudy/{grid_name}/{i-1}.cont", infile+'.cont')
                     
         if replace:
             failed_list = []
@@ -122,7 +122,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
         axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties_hf(hf)
 
         # read first spectra from the first grid point to get length and wavelength grid
-        lam = read_wavelength(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/0")
+        lam = read_wavelength(f"{synthesizer_data_dir}/cloudy/{grid_name}/0")
 
         if 'spectra' in hf:
             del hf['spectra']
@@ -147,7 +147,7 @@ def add_spectra(grid_name, synthesizer_data_dir):
             indices = tuple(indices)
 
             # define the infile
-            infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
+            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
 
             # read the continuum file containing the spectra 
             spec_dict = read_continuum(infile, return_dict=True)
@@ -226,7 +226,7 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
             indices = tuple(indices)
 
             # define the infile
-            infile = f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/{i}"
+            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
 
             # get TOTAL continuum spectra
             nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
@@ -287,7 +287,7 @@ if __name__ == "__main__":
         print(f'  qsub -t 1:{len(failed_list)}  run_grid.job')
 
         # replace input_names with list of failed runs
-        with open(f"{synthesizer_data_dir}/{grid_name.replace('_','/')}/input_names.txt", "w") as myfile:
+        with open(f"{synthesizer_data_dir}/cloudy/{grid_name}/input_names.txt", "w") as myfile:
             myfile.write('\n'.join(map(str, failed_list)))
 
     #if not failed, go ahead and add spectra and lines
