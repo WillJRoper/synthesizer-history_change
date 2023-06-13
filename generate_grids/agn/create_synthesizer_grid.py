@@ -267,15 +267,16 @@ if __name__ == "__main__":
                                                   'for a given grid.'))
 
     parser.add_argument("-synthesizer_data_dir", type=str, required=True) # path to synthesizer_data_dir
-    parser.add_argument("-grid", "--grid", type=str, required=True)
+    parser.add_argument("-grid_name", "--grid_name", type=str, required=True)
+    parser.add_argument("-replace", "--replace", type=bool, default=False, required=False)
 
     args = parser.parse_args()
 
     synthesizer_data_dir = args.synthesizer_data_dir
-    grid_name = args.grid
+    grid_name = args.grid_name
 
     # check cloudy runs
-    failed_list = check_cloudy_runs(grid_name, synthesizer_data_dir, replace = True)
+    failed_list = check_cloudy_runs(grid_name, synthesizer_data_dir, replace = args.replace)
 
     print(failed_list)
 
