@@ -80,7 +80,7 @@ if __name__ == "__main__":
     cloudy = args.cloudy
 
     # load cloudy parameters
-    fixed_params, grid_params = load_grid_params(param_file = args.cloudy_params)
+    fixed_params, grid_params = load_grid_params(param_file = f'{grid_name}.yaml')
 
 
     print(machine)
