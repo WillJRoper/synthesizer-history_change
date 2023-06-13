@@ -29,7 +29,7 @@ def get_grid_properties_hf(hf, verbose=True):
     axes_values = {axis: hf[axis][:] for axis in axes} # dictionary of axis grid points
     
     # Get the properties of the grid including the dimensions etc.
-    axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(axes, axes_values, verbose=verbose)
+    return get_grid_properties(axes, axes_values, verbose=verbose)
 
 
 
