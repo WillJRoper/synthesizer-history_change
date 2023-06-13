@@ -42,7 +42,11 @@ class Ions:
         'NeIII': 63.45 * eV,
     }
 
+    # convert to frequency
+    frequency = {k: v/h for k,v in energy.items()}
 
+    # convert to wavelength
+    wavelength = {k: c/v for k,v in frequency.items()}
 
 
 
@@ -107,7 +111,7 @@ class ShapeCommands:
 
         return shape_commands
     
-    def cloudy_agn(TBB, aox=-1.4, auv=-0.5, ax=-1.):
+    def cloudy_agn(TBB, aox=-1.4, auv=-0.5, ax=-1.35): # values from Calabro CEERS AGN model
         
         """
         A function for specifying the cloudy AGN model. See 6.2 Hazy1.pdf.
