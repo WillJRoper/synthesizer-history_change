@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
         
         # open the new grid
-        with h5py.File(f'{args.synthesizer_data_dir}/grids/agn_{grid_name}.hdf5', 'w') as hf:
+        with h5py.File(f'{args.synthesizer_data_dir}/grids/{grid_name}.hdf5', 'w') as hf:
 
             # add attribute with the grid axes
             hf.attrs['grid_axes'] = grid_axes
