@@ -3,7 +3,7 @@
 This reads in a cloudy grid of models
 
 """
-
+from astropy.io import ascii
 from scipy import integrate
 import os
 import shutil
@@ -307,9 +307,10 @@ def add_elines(grid_name, synthesizer_data_dir):
         
         infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}.emis_intrinsic"
 
-        d = np.loadtxt(infile)
+        d = ascii.read(infile)
 
         print(d)
+        print(d.cols)
 
         # # set up output arrays
         # for line_id in lines_to_include:
