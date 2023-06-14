@@ -310,7 +310,7 @@ def add_elines(grid_name, synthesizer_data_dir):
         d = ascii.read(infile)
 
         print(d)
-        print(d.cols)
+        print(d.colnames)
 
         # # set up output arrays
         # for line_id in lines_to_include:
