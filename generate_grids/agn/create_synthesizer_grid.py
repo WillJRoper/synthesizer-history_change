@@ -221,10 +221,9 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
         for line_id in lines_to_include:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
             lines[f'{line_id}/intrinsic_luminosity'] = np.zeros(shape)
-            if include_spectra:
-                lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
-                lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
-                lines[f'{line_id}/continuum'] = np.zeros(shape)
+            lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/continuum'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
