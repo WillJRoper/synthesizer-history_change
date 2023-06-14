@@ -1,7 +1,7 @@
 CMB: false  # include CMB heating
 T_floor: 100  # lower gas temperature floor
 cloudy_version: v17.03
-cosmic_rays: false  # flag for inclusion of cosmic ray heating
+cosmic_rays: true  # flag for inclusion of cosmic ray heating
 covering_factor: 1.0 #
 d2m: 0.3  # dust to metals ratio in the cloud
 scaling: null

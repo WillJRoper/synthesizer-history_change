@@ -11,7 +11,7 @@ z: 0.0  # redshift
 geometry: spherical
 grains: true # include grains
 resolution: 1.0 # energy resolution relative to the default
-alpha: [-1.2, -1.4, -1.7, -2.0]
+aalpha: [-1.2, -1.4, -1.7, -2.0]
 # log10Z: [-4.0, -3.0, -2.0]
 log10Z: [-3., -2.1, -1.77, -1.52] # used in Fig 2 of Feltre 16
 log10U: [-4,-3,-2,-1]

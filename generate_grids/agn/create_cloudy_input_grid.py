@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
         if not args.dry_run:
 
-            abundances = Abundances(10**params['log10Z'])
+            abundances = Abundances(10**params['log10Z'], d2m=params['d2m'], alpha=params['alpha'], scaling=params['scaling'])
 
             if model == 'cloudy':
 
@@ -145,7 +145,7 @@ if __name__ == "__main__":
                 lam = np.arange(1, 20000, 1) * angstrom
 
                 # determine luminosity
-                lnu = Feltre16.intrinsic(lam, alpha=params['alpha'])
+                lnu = Feltre16.intrinsic(lam, alpha=params['aalpha'])
 
                 # create shape commands
                 shape_commands = ShapeCommands.table_sed(str(i), lam, lnu,  output_dir=output_dir)
