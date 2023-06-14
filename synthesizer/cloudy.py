@@ -177,7 +177,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'CMB': False, # include CMB heating
         'cosmic_rays': False, # include cosmic rays
         'grains': False, # include dust grains
-        'turbulence': False # include turbulence (default number is 100?)
+        'turbulence': False, # include turbulence (default number is 100?)
         'geometry': 'planeparallel', # the geometry 
         'resolution': 1.0, # relative resolution the saved continuum spectra
         'output_abundances': True, # output abundances
