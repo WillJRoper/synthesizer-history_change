@@ -208,10 +208,11 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
             del hf['lines']
 
         # define spectra
-        spectra = hf['spectra']
-        normalisation = spectra['normalisation'][:]
-        lam = spectra['wavelength'][:]
-
+        if include_spectra:
+            spectra = hf['spectra']
+            normalisation = spectra['normalisation'][:]
+            lam = spectra['wavelength'][:]
+            
         # create group for holding lines
         lines = hf.create_group('lines')
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
@@ -234,8 +235,9 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
             infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
 
             # get TOTAL continuum spectra
-            nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
-            continuum = spectra['transmitted'][indices] + nebular_continuum
+            if include_spectra:
+                nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
+                continuum = spectra['transmitted'][indices] + nebular_continuum
 
             # get line quantities
             id, blend, wavelength, intrinsic, emergent = read_lines(infile)
@@ -250,9 +252,14 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
                 # save line wavelength
                 line.attrs['wavelength'] = wavelength_
 
+                if include_spectra:
+                    norm = normalisation[indices]
+                else:
+                    norm = 1.
+
                 # calculate line luminosity and save it. Uses normalisation from spectra.
-                line['luminosity'][indices] = 10**(emergent_)/normalisation[indices]  # erg s^-1
-                line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/normalisation[indices]  # erg s^-1
+                line['luminosity'][indices] = 10**(emergent_)/norm  # erg s^-1
+                line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/norm  # erg s^-1
                 
                 if include_spectra:
 
