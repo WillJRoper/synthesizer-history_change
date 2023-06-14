@@ -275,6 +275,59 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
                         wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
+
+
+def add_elines(grid_name, synthesizer_data_dir):
+    """
+    Open cloudy line emissivity files and add them to the HDF5 grid
+
+    Parameters
+    ----------
+    grid_name: str
+        Name of the grid.
+    synthesizer_data_dir: str
+        Directory where synthesizer data is kept.
+    """
+
+    # open the new grid
+    with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'a') as hf:
+
+        
+        # Get the properties of the grid including the dimensions etc.
+        axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties_hf(hf)
+
+        # delete lines group if it already exists
+        if 'elines' in hf:
+            del hf['elines']
+            
+        # create group for holding lines
+        elines = hf.create_group('elines')
+        # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
+
+        
+        infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}.emis_intrinsic"
+
+        d = np.loadtxt(infile)
+
+        print(d)
+
+        # # set up output arrays
+        # for line_id in lines_to_include:
+        #     elines[f'{line_id}/luminosity'] = np.zeros(shape)
+
+        # for i, indices in enumerate(index_list):
+
+        #     # convert indices array to tuple
+        #     indices = tuple(indices)
+
+        #     # define the infile
+        #     infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
+
+
+
+
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=('Create synthesizer HDF5 grid '
@@ -327,3 +380,6 @@ if __name__ == "__main__":
         # add lines
         add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
         print('- lines added')
+
+        # add emission lines from .emis files
+        add_add_elines(grid_name, synthesizer_data_dir)
