@@ -314,8 +314,6 @@ def add_elines(grid_name, synthesizer_data_dir):
 
         for i, indices in enumerate(index_list):
 
-            print(i)
-
             # convert indices array to tuple
             indices = tuple(indices)
 
