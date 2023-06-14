@@ -318,9 +318,10 @@ def add_elines(grid_name, synthesizer_data_dir):
             indices = tuple(indices)
 
             # define the infile
-            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
+            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}.emis_intrinsic"
 
             d = np.loadtxt(infile).T
+            print(d[1])
 
             for j, line_id in enumerate(line_ids):
                 elines[f'{line_id}/luminosity'] = np.sum(d[i+1])
