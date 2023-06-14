@@ -383,4 +383,4 @@ if __name__ == "__main__":
         # print('- lines added')
 
         # add emission lines from .emis files
-        add_add_elines(grid_name, synthesizer_data_dir)
+        add_elines(grid_name, synthesizer_data_dir)
