@@ -33,7 +33,7 @@ def get_grid_properties_hf(hf, verbose=True):
 
 
 
-def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
+def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False, include_spectra = True):
     """
     Check that all the cloudy runs have run properly
 
@@ -63,15 +63,17 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
             failed = False
 
             # check if files exist
-            if not os.path.isfile(infile+'.cont'):  # attempt to open run.
-                failed = True   
+            if include_spectra:
+                if not os.path.isfile(infile+'.cont'):  # attempt to open run.
+                    failed = True   
             if not os.path.isfile(infile+'.lines'):  # attempt to open run.
                 failed = True
             
             # if they exist also check they have size >0
             if not failed:
-                if os.path.getsize(infile+'.cont') < 1000:
-                    failed = True
+                if include_spectra:
+                    if os.path.getsize(infile+'.cont') < 1000:
+                        failed = True
                 if os.path.getsize(infile+'.lines') < 1000:
                     failed = True
 
@@ -82,7 +84,8 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False):
                 # if replace is specified, instead replace the grid point
                 if replace:
                     shutil.copyfile(f"{synthesizer_data_dir}/cloudy/{grid_name}/{i-1}.lines", infile+'.lines')
-                    shutil.copyfile(f"{synthesizer_data_dir}/cloudy/{grid_name}/{i-1}.cont", infile+'.cont')
+                    if include_spectra:
+                        shutil.copyfile(f"{synthesizer_data_dir}/cloudy/{grid_name}/{i-1}.cont", infile+'.cont')
                     
         if replace:
             failed_list = []
@@ -179,7 +182,7 @@ def get_default_line_list(interesting=True):
 
 
 
-def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
+def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = True):
     """
     Open cloudy lines and add them to the HDF5 grid
 
@@ -217,9 +220,10 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
         for line_id in lines_to_include:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
             lines[f'{line_id}/intrinsic_luminosity'] = np.zeros(shape)
-            lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
-            lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
-            lines[f'{line_id}/continuum'] = np.zeros(shape)
+            if include_spectra:
+                lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
+                lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
+                lines[f'{line_id}/continuum'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
@@ -250,17 +254,19 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
                 line['luminosity'][indices] = 10**(emergent_)/normalisation[indices]  # erg s^-1
                 line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/normalisation[indices]  # erg s^-1
                 
-                # calculate stellar continuum at the line wavelength and save it. 
-                line['stellar_continuum'][indices] = np.interp(
-                    wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
-                
-                # calculate nebular continuum at the line wavelength and save it. 
-                line['nebular_continuum'][indices] = np.interp(
-                    wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
-                
-                # calculate total continuum at the line wavelength and save it. 
-                line['continuum'][indices] = np.interp(
-                    wavelength_, lam, continuum)  # erg s^-1 Hz^-1
+                if include_spectra:
+
+                    # calculate stellar continuum at the line wavelength and save it. 
+                    line['stellar_continuum'][indices] = np.interp(
+                        wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
+                    
+                    # calculate nebular continuum at the line wavelength and save it. 
+                    line['nebular_continuum'][indices] = np.interp(
+                        wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
+                    
+                    # calculate total continuum at the line wavelength and save it. 
+                    line['continuum'][indices] = np.interp(
+                        wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
 if __name__ == "__main__":
@@ -271,14 +277,17 @@ if __name__ == "__main__":
     parser.add_argument("-synthesizer_data_dir", type=str, required=True) # path to synthesizer_data_dir
     parser.add_argument("-grid_name", "--grid_name", type=str, required=True)
     parser.add_argument("-replace", "--replace", type=bool, default=False, required=False)
+    parser.add_argument("-include_spectra", "--replace", type=bool, default=True)
 
     args = parser.parse_args()
+
+    include_spectra = args.include_spectra
 
     synthesizer_data_dir = args.synthesizer_data_dir
     grid_name = args.grid_name
 
     # check cloudy runs
-    failed_list = check_cloudy_runs(grid_name, synthesizer_data_dir, replace = args.replace)
+    failed_list = check_cloudy_runs(grid_name, synthesizer_data_dir, replace = args.replace, include_spectra = include_spectra)
 
     print(failed_list)
 
@@ -298,8 +307,9 @@ if __name__ == "__main__":
         print('- passed checks')
 
         # add spectra
-        add_spectra(grid_name, synthesizer_data_dir)
-        print('- spectra added')
+        if include_spectra:
+            add_spectra(grid_name, synthesizer_data_dir)
+            print('- spectra added')
 
         # get list of lines
         lines_to_include = get_default_line_list()
