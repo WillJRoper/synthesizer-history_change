@@ -216,6 +216,7 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
         # set up output arrays
         for line_id in lines_to_include:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
+            lines[f'{line_id}/intrinsic_luminosity'] = np.zeros(shape)
             lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
             lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
             lines[f'{line_id}/continuum'] = np.zeros(shape)
@@ -238,7 +239,7 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
             # identify lines we want to keep
             s = np.nonzero(np.in1d(id, np.array(lines_to_include)))[0]
 
-            for id_, wavelength_, emergent_ in zip(id[s], wavelength[s], emergent[s]):
+            for id_, wavelength_, emergent_, intrinsic_ in zip(id[s], wavelength[s], emergent[s], intrinsic[s]):
 
                 line = lines[id_]
 
@@ -247,6 +248,7 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include):
 
                 # calculate line luminosity and save it. Uses normalisation from spectra.
                 line['luminosity'][indices] = 10**(emergent_)/normalisation[indices]  # erg s^-1
+                line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/normalisation[indices]  # erg s^-1
                 
                 # calculate stellar continuum at the line wavelength and save it. 
                 line['stellar_continuum'][indices] = np.interp(
