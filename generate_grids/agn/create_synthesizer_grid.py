@@ -326,5 +326,5 @@ if __name__ == "__main__":
         lines_to_include = get_default_line_list()
 
         # add lines
-        add_lines(grid_name, synthesizer_data_dir, lines_to_include)
+        add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
         print('- lines added')
