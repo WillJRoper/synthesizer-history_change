@@ -325,7 +325,7 @@ def add_elines(grid_name, synthesizer_data_dir):
             d = np.loadtxt(infile).T
 
             for j, line_id in enumerate(line_ids):
-                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1])
+                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1])/np.sum(d[2])
 
 
 
