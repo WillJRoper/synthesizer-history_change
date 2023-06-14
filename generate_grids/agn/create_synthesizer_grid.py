@@ -304,25 +304,27 @@ def add_elines(grid_name, synthesizer_data_dir):
         elines = hf.create_group('elines')
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
+        line_ids = ['H  1 4861.33A','H  1 6562.81A','N  2 6583.45A','O  3 5006.84A']
         
         infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/0.emis_intrinsic"
 
-        d = ascii.read(infile)
+        # set up output arrays
+        for i, line_id in enumerate(line_ids):
+            elines[f'{line_id}/luminosity'] = np.zeros(shape)
 
-        print(d)
-        print(d.colnames)
+        for i, indices in enumerate(index_list):
 
-        # # set up output arrays
-        # for line_id in lines_to_include:
-        #     elines[f'{line_id}/luminosity'] = np.zeros(shape)
+            # convert indices array to tuple
+            indices = tuple(indices)
 
-        # for i, indices in enumerate(index_list):
+            # define the infile
+            infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
 
-        #     # convert indices array to tuple
-        #     indices = tuple(indices)
+            d = np.loadtxt(infile).T
 
-        #     # define the infile
-        #     infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}"
+            for j, line_id in enumerate(line_ids):
+                elines[f'{line_id}/luminosity'] = np.sum(d[i+1])
+
 
 
 
