@@ -297,8 +297,8 @@ def add_elines(grid_name, synthesizer_data_dir):
         axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties_hf(hf)
 
         # delete lines group if it already exists
-        # if 'elines' in hf:
-        #     del hf['elines']
+        if 'elines' in hf:
+            del hf['elines']
             
         # create group for holding lines
         elines = hf.create_group('elines')
