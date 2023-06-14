@@ -304,7 +304,7 @@ def add_elines(grid_name, synthesizer_data_dir):
         elines = hf.create_group('elines')
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
-        line_ids = ['H  1 4861.33A','H  1 6562.81A','N  2 6583.45A','O  3 5006.84A']
+        line_ids = ['H 1 6564.62A','H 1 4862.69A','N 2 6585.27A','O 3 5008.24A']
         
         infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/0.emis_intrinsic"
 
