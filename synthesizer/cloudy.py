@@ -177,6 +177,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'CMB': False, # include CMB heating
         'cosmic_rays': False, # include cosmic rays
         'grains': False, # include dust grains
+        'turbulence': False # include turbulence (default number is 100?)
         'geometry': 'planeparallel', # the geometry 
         'resolution': 1.0, # relative resolution the saved continuum spectra
         'output_abundances': True, # output abundances
@@ -275,6 +276,10 @@ def create_cloudy_input(model_name, shape_commands, abundances,
 
     log10U = params['log10U']
 
+    # open geometry
+    if params['geometry'] == 'open':
+        cinput.append(f'ionization parameter = {log10U:.3f}\n')
+
     # plane parallel geometry
     if params['geometry'] == 'planeparallel':
         cinput.append(f'ionization parameter = {log10U:.3f}\n')
@@ -294,7 +299,10 @@ def create_cloudy_input(model_name, shape_commands, abundances,
     if params['CMB']:
         cinput.append(f'CMB {params["z"]}\n')
 
-    # define hydrogend density
+    if params['turbulence']:
+        cinput.append(f'turbulence {params["turbulence"]}\n')
+
+    # define hydrogen density
     cinput.append(f'hden {params["log10n_H"]} log constant density\n')
 
     # cinput.append(f'covering factor {params["covering_factor"]} linear\n')
