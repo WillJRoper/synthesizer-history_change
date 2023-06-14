@@ -182,6 +182,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'output_abundances': True, # output abundances
         'output_cont': True, # output continuum
         'output_lines': True, # output lines
+        'output_line_emissivity': False # save line emissivities
     }
 
     # update default_params with kwargs
@@ -305,8 +306,6 @@ def create_cloudy_input(model_name, shape_commands, abundances,
     cinput.append(f'stop efrac {params["stop_efrac"]}\n')
 
     # --- output commands
-    cinput.append(f'print line vacuum\n')  # output vacuum wavelengths
-    cinput.append(f'set continuum resolution {params["resolution"]}\n') # set the continuum resolution
     cinput.append(f'save overview  "{model_name}.ovr" last\n')
 
     # output abundances
@@ -315,13 +314,24 @@ def create_cloudy_input(model_name, shape_commands, abundances,
 
     # output continuum (i.e. spectra)
     if params['output_cont']:
+        cinput.append(f'set continuum resolution {params["resolution"]}\n') # set the continuum resolution
         cinput.append((f'save last continuum "{model_name}.cont" '
                    f'units Angstroms no clobber\n'))
     # output lines
     if params['output_lines']:
+        cinput.append(f'print line vacuum\n')  # output vacuum wavelengths
         cinput.append((f'save last lines, array "{model_name}.lines" '
                   'units Angstroms no clobber\n'))
     
+    if params['output_line_emissivity']:
+        cinput.append(f'save last lines emissivity  "{model_name}.emis_intrinsic"\n')
+        for line in ['H  1  4861.33A', 'H  1  6562.81A', 'N  2  6583.45A', 'O  3  5006.84A']:
+            cinput.append(f'{line}\n')
+        cinput.append('end of lines\n')
+        cinput.append(f'save last lines emissivity emergent "{model_name}.emis_emergent"\n')
+        for line in ['H  1  4861.33A', 'H  1  6562.81A', 'N  2  6583.45A', 'O  3  5006.84A']:
+            cinput.append(f'{line}\n')
+        cinput.append('end of lines\n')
 
     # --- save input file
     open(f'{output_dir}/{model_name}.in', 'w').writelines(cinput)
