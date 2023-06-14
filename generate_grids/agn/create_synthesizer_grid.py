@@ -305,7 +305,7 @@ def add_elines(grid_name, synthesizer_data_dir):
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
         
-        infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/{i}.emis_intrinsic"
+        infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/0.emis_intrinsic"
 
         d = ascii.read(infile)
 
