@@ -65,17 +65,21 @@ def check_cloudy_runs(grid_name, synthesizer_data_dir, replace=False, include_sp
             # check if files exist
             if include_spectra:
                 if not os.path.isfile(infile+'.cont'):  # attempt to open run.
+                    print('failed cont')
                     failed = True   
             if not os.path.isfile(infile+'.lines'):  # attempt to open run.
                 failed = True
+                print('failed lines')
             
             # if they exist also check they have size >0
             if not failed:
                 if include_spectra:
                     if os.path.getsize(infile+'.cont') < 1000:
+                        print('failed cont size')
                         failed = True
                 if os.path.getsize(infile+'.lines') < 1000:
                     failed = True
+                    print('failed lines size')
 
             if failed:
                 print(i, model_list[i])    
