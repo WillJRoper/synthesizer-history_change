@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
         params = fixed_params | grid_params
 
-        print(i, params)
+        # print(i, params)
 
         if not args.dry_run:
 
