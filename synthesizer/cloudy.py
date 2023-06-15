@@ -183,8 +183,8 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'output_abundances': True, # output abundances
         'output_cont': True, # output continuum
         'output_lines': True, # output lines
-        'output_line_emissivity': False # save line emissivities
-        'iterate_to_convergence': True
+        'output_line_emissivity': False, # save line emissivities
+        'iterate_to_convergence': True,
     }
 
     # update default_params with kwargs
