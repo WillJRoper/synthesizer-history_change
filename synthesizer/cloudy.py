@@ -184,6 +184,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'output_cont': True, # output continuum
         'output_lines': True, # output lines
         'output_line_emissivity': False # save line emissivities
+        'iterate_to_convergence': True
     }
 
     # update default_params with kwargs
@@ -200,7 +201,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
     # add spectral shape commands
     cinput += shape_commands
 
-    # --- Define the chemical composition
+    # Define the chemical composition
     for ele in ['He'] + abundances.metals:
         cinput.append((f'element abundance {abundances.name[ele]} '
                        f'{abundances.a[ele]} no grains\n'))
@@ -276,6 +277,12 @@ def create_cloudy_input(model_name, shape_commands, abundances,
 
     log10U = params['log10U']
 
+    #########################################
+    # GEOMETRY COMMANDS
+
+    # define hydrogen density
+    cinput.append(f'hden {params["log10n_H"]} log constant density\n')
+
     # open geometry
     if params['geometry'] == 'open':
         cinput.append(f'ionization parameter = {log10U:.3f}\n')
@@ -293,25 +300,35 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         cinput.append(f'radius {params["log10radius"]} log parsecs\n')
         cinput.append('sphere\n')
 
+    cinput.append(f'covering factor {params["covering_factor"]} linear\n')
+
+    #########################################
+    # BACKGROUND COMMANDS
+
     # add background continuum
     if params['cosmic_rays']:
         cinput.append('cosmic rays, background\n')
+
     if params['CMB']:
         cinput.append(f'CMB {params["z"]}\n')
 
     if params['turbulence']:
         cinput.append(f'turbulence {params["turbulence"]}\n')
 
-    # define hydrogen density
-    cinput.append(f'hden {params["log10n_H"]} log constant density\n')
+    #########################################
+    # PROCESSING COMMANDS
 
-    # cinput.append(f'covering factor {params["covering_factor"]} linear\n')
+    if params["iterate_to_convergence"]:
+        cinput.append('iterate to convergence\n')
 
-    # --- Processing commands
-    cinput.append('iterate to convergence\n')
-    cinput.append(f'set temperature floor {params["T_floor"]} linear\n')
-    cinput.append(f'stop temperature {params["stop_T"]}K\n')
-    cinput.append(f'stop efrac {params["stop_efrac"]}\n')
+    if params["T_floor"]:
+        cinput.append(f'set temperature floor {params["T_floor"]} linear\n')
+
+    if params["stop_T"]:
+        cinput.append(f'stop temperature {params["stop_T"]}K\n')
+
+    if params["stop_efrac"]:
+        cinput.append(f'stop efrac {params["stop_efrac"]}\n')
 
     # --- output commands
     cinput.append(f'save overview  "{model_name}.ovr" last\n')
@@ -331,6 +348,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         cinput.append((f'save last lines, array "{model_name}.lines" '
                   'units Angstroms no clobber\n'))
     
+    # output specific line emissivities
     if params['output_line_emissivity']:
         cinput.append(f'save last lines emissivity  "{model_name}.emis_intrinsic"\n')
         for line in ['H  1  4861.33A', 'H  1  6562.81A', 'N  2  6583.45A', 'O  3  5006.84A']:
@@ -341,7 +359,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
             cinput.append(f'{line}\n')
         cinput.append('end of lines\n')
 
-    # --- save input file
+    # save input file
     open(f'{output_dir}/{model_name}.in', 'w').writelines(cinput)
 
     return cinput
