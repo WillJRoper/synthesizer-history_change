@@ -109,6 +109,7 @@ def apollo_submission_script(n, grid_data_dir, cloudy_path, cloudy_version):
 let index=$SGE_TASK_ID
 
 # set cloudy data path
+export CLOUDY_DATA_PATH={cloudy_data_path}
 
 # access line at index from input_names file
 id=$(sed "${{index}}q;d" input_names.txt)
@@ -117,7 +118,8 @@ id=$(sed "${{index}}q;d" input_names.txt)
 
     open(f'{grid_data_dir}/run_grid.job', 'w').write(apollo_job_script)
     print(grid_data_dir)
-    print(f'qsub -t 1:{n} run_grid.job -v CLOUDY_DATA_PATH={cloudy_data_path}')
+    # print(f'qsub -t 1:{n} run_grid.job -v CLOUDY_DATA_PATH={cloudy_data_path}')
+    print(f'qsub -t 1:{n} run_grid.job')
 
     return
 
