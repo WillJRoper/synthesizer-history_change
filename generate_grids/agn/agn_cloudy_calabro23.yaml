@@ -1,16 +1,16 @@
 CMB: false  # include CMB heating
-T_floor: 100  # lower gas temperature floor
-cloudy_version: v17.03
-cosmic_rays: false  # flag for inclusion of cosmic ray heating
+T_floor: false  # lower gas temperature floor
+cloudy_version: c17.03
+cosmic_rays: true  # flag for inclusion of cosmic ray heating
 covering_factor: 1.0  #
 alpha: 0.0 # alpha abundance
 d2m: 0.3  # dust to metals ratio in the cloud
 scaling: Dopita+2013 # rescaling of particular elements
 stop_T: 500  # stopping temperature
-stop_efrac: -2  # limiting ratio of electron to H densities
+stop_efrac: false  # limiting ratio of electron to H densities
 z: 0.0  # redshift
-turbulence: false # turbulence
-geometry: planeparallel
+turbulence: 100 # turbulence
+geometry: open
 grains: true # include grains
 auv: -0.5
 ax: -1.35
@@ -22,4 +22,5 @@ log10U: [-4.0,-3.0,-2.0,-1.0]
 log10n_H: [2.,3.,4.]
 output_cont: false
 resolution: 1.0 # energy resolution relative to the default
-output_line_emissivity: True
+output_line_emissivity: true
+iterate_to_convergence: false
