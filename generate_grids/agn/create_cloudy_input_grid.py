@@ -88,6 +88,7 @@ if __name__ == "__main__":
     print(output_dir)
     print(cloudy_path)
     print(model)
+    print(cloudy_version)
 
     for k, v in fixed_params.items():
         print(k,v)
@@ -98,7 +99,7 @@ if __name__ == "__main__":
     # make list of models
     grid_axes = list(grid_params.keys())
 
-    axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(grid_axes, grid_params)
+    axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties(grid_axes, grid_params, verbose = False)
 
 
 

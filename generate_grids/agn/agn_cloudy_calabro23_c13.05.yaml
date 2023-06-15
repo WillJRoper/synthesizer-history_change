@@ -1,6 +1,6 @@
 CMB: false  # include CMB heating
 T_floor: false  # lower gas temperature floor
-cloudy_version: c17.03
+cloudy_version: c13.05
 cosmic_rays: true  # flag for inclusion of cosmic ray heating
 covering_factor: 1.0  #
 alpha: 0.0 # alpha abundance
