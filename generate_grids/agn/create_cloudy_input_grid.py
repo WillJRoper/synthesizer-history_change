@@ -62,7 +62,7 @@ if __name__ == "__main__":
     parser.add_argument("-machine", type=str, required=True) # machine (for submission script generation)
     parser.add_argument("-synthesizer_data_dir", type=str, required=True) # path to synthesizer_data_dir
     parser.add_argument("-grid_name", type=str, required=True) # grid_name, used to define parameter file
-    parser.add_argument("-cloudy", type=str, required=True) # path to cloudy executable
+    parser.add_argument("-cloudy_path", type=str, required=True) # path to cloudy directory (not executable; this is assumed to {cloudy}/{cloudy_version}/source/cloudy.ext)
     parser.add_argument("-dry_run", type=bool, required=False, default=False) # boolean for dry run
     args = parser.parse_args()
 
@@ -77,15 +77,16 @@ if __name__ == "__main__":
 
     machine = args.machine
     output_dir = f"{args.synthesizer_data_dir}/cloudy/{grid_name}"
-    cloudy = args.cloudy
+    cloudy_path = args.cloudy_path
 
     # load cloudy parameters
     fixed_params, grid_params = load_grid_params(param_file = f'{grid_name}.yaml')
 
+    cloudy_version = fixed_params['cloudy_version']
 
     print(machine)
     print(output_dir)
-    print(cloudy)
+    print(cloudy_path)
     print(model)
 
     for k, v in fixed_params.items():
@@ -163,8 +164,8 @@ if __name__ == "__main__":
                 myfile.write(f'{i}\n')
 
     if machine == 'apollo':
-        apollo_submission_script(n_models, output_dir, cloudy)
+        apollo_submission_script(n_models, output_dir, cloudy_path, cloudy_version)
     elif machine == 'cosma7':
-        cosma7_submission_script(n_models, output_dir, cloudy,
+        cosma7_submission_script(n_models, output_dir, cloudy_path, cloudy_version,
                                 cosma_project='cosma7',
                                 cosma_account='dp004')

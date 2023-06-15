@@ -49,7 +49,8 @@ def get_grid_properties(axes, axes_values, verbose = True):
 
 
 
-def apollo_submission_script(n, grid_data_dir, cloudy):
+def apollo_submission_script(n, grid_data_dir, cloudy_path, cloudy_version):
+
     """
     Create an Apollo SGE submission script.
 
@@ -66,6 +67,12 @@ def apollo_submission_script(n, grid_data_dir, cloudy):
     -------
     None
     """
+
+    # cloudy executable
+    cloudy = f'{cloudy_path}/{cloudy_version}/source/cloudy.exe'
+
+    # cloudy data dir
+    cloudy_data_path = f'{cloudy_path}/{cloudy_version}/data/'
 
     apollo_job_script = f"""
 ######################################################################
@@ -99,9 +106,11 @@ def apollo_submission_script(n, grid_data_dir, cloudy):
 # increment array task ID so not zero indexed
 let index=$SGE_TASK_ID
 
+# set cloudy data path
+
 # access line at index from input_names file
 id=$(sed "${{index}}q;d" input_names.txt)
-{cloudy} -r $id
+{cloudy} -r $id -v CLOUDY_DATA_PATH={cloudy_data_path}
 """
 
     open(f'{grid_data_dir}/run_grid.job', 'w').write(apollo_job_script)
