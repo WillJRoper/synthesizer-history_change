@@ -322,8 +322,15 @@ def add_elines(grid_name, synthesizer_data_dir):
 
             d = np.loadtxt(infile).T
 
+            # depth into cloud
+            depth = d[0]
+            
+            dr = np.concatenate((np.array([depth[0]]), depth[1:]-depth[:-1]))
+
+            dv = dr*depth**2# volume of shell
+
             for j, line_id in enumerate(line_ids):
-                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1])/np.sum(d[2])
+                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dv)
 
 
 
