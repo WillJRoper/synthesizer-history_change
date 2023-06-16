@@ -346,10 +346,10 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
             with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/{i}.elin','r') as f:
                 d = f.readlines()
 
-            d = d[1:]# trim first line
+            d = d[2:]# trim two lines
 
             for line_id, d_ in zip(line_ids,d):
-                print(line_id, d_.split(' ')[-1])
+                print(line_id, np.float(d_.split(' ')[-1]))
 
 
             
