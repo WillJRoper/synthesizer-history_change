@@ -521,7 +521,7 @@ if __name__ == "__main__":
         if args.line_calc_method == 'elines':
 
             # add emission lines from .emis files
-            add_elines(grid_name, synthesizer_data_dir)
+            add_elines(grid_name, synthesizer_data_dir, include_spectra = include_spectra)
             print('- elines added')
 
         if args.line_calc_method == 'llines':
