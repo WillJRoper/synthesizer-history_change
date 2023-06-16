@@ -349,7 +349,7 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
             d = d[2:]# trim two lines
 
             for line_id, d_ in zip(line_ids,d):
-                print(line_id, np.float(d_.split(' ')[-1]))
+                print(line_id, float(d_.split(' ')[-1]))
 
 
             
