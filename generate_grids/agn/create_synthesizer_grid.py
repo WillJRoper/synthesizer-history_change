@@ -342,47 +342,30 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
             
             # read file
-
             with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/{i}.elin','r') as f:
                 d = f.readlines()
 
             d = d[2:]# trim two lines
 
             for line_id, d_ in zip(line_ids,d):
-                print(line_id, float(d_.split(' ')[-1]))
 
+                lum = float(d_.split(' ')[-1])
 
-            
-
-            # for id_, wavelength_, emergent_, intrinsic_ in zip(id[s], wavelength[s], emergent[s], intrinsic[s]):
-
-            #     line = lines[id_]
-
-            #     # save line wavelength
-            #     line.attrs['wavelength'] = wavelength_
-
-            #     if include_spectra:
-            #         norm = normalisation[indices]
-            #     else:
-            #         norm = 1.
-
-            #     # calculate line luminosity and save it. Uses normalisation from spectra.
-            #     line['luminosity'][indices] = 10**(emergent_)/norm  # erg s^-1
-            #     line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/norm  # erg s^-1
+                line['luminosity'][indices] = lum  # erg s^-1 INCORRECT UNITS AT THE MOMENT
                 
-            #     if include_spectra:
+                if include_spectra:
 
-            #         # calculate stellar continuum at the line wavelength and save it. 
-            #         line['stellar_continuum'][indices] = np.interp(
-            #             wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
+                    # calculate stellar continuum at the line wavelength and save it. 
+                    line['stellar_continuum'][indices] = np.interp(
+                        wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
                     
-            #         # calculate nebular continuum at the line wavelength and save it. 
-            #         line['nebular_continuum'][indices] = np.interp(
-            #             wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
+                    # calculate nebular continuum at the line wavelength and save it. 
+                    line['nebular_continuum'][indices] = np.interp(
+                        wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
                     
-            #         # calculate total continuum at the line wavelength and save it. 
-            #         line['continuum'][indices] = np.interp(
-            #             wavelength_, lam, continuum)  # erg s^-1 Hz^-1
+                    # calculate total continuum at the line wavelength and save it. 
+                    line['continuum'][indices] = np.interp(
+                        wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
 
@@ -440,7 +423,12 @@ def add_elines(grid_name, synthesizer_data_dir):
             dv = dr*depth**2# volume of shell
 
             for j, line_id in enumerate(line_ids):
-                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dv)
+                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dr)
+
+            # dv = dr*depth**2# volume of shell
+
+            # for j, line_id in enumerate(line_ids):
+            #     elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dv)
 
 
 
@@ -495,13 +483,15 @@ if __name__ == "__main__":
         #     print('- spectra added')
 
         # get list of lines
-        # lines_to_include = get_default_line_list()
+        lines_to_include = get_default_line_list()
 
         # add lines
-        # add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
-        # print('- lines added')
+        add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
+        print('- lines added')
 
         # add emission lines from .emis files
-        # add_elines(grid_name, synthesizer_data_dir)
+        add_elines(grid_name, synthesizer_data_dir)
+        print('- elines added')
 
         add_linelist(grid_name, synthesizer_data_dir, include_spectra = include_spectra)
+        print('- llines added')
