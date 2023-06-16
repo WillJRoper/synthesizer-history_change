@@ -316,6 +316,8 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
         line_ids = [line.replace('\n','') for line in line_ids]
 
+        print(line_ids)
+
         # set up output arrays
         for line_id in line_ids:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
