@@ -314,6 +314,8 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
         with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat','r') as f:
             line_ids = f.readlines()
+            
+        line_ids = [line.replace('\n','') for line in line_ids]
 
         print(line_ids)
 
