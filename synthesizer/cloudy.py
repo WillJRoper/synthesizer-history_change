@@ -187,7 +187,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'output_abundances': True, # output abundances
         'output_cont': True, # output continuum
         'output_lines': True, # output lines
-        'output_linelist': False 
+        'output_linelist': False, 
         'output_line_emissivity': False, # save line emissivities
         'iterate_to_convergence': True,
     }
