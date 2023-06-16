@@ -275,7 +275,7 @@ def add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra
                         wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
-def read_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
+def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
     """
     Open cloudy lines and add them to the HDF5 grid
 
