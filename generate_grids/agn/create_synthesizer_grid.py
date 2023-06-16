@@ -366,7 +366,7 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
 
 
-def add_elines(grid_name, synthesizer_data_dir):
+def add_elines(grid_name, synthesizer_data_dir, include_spectra = True):
     """
     Open cloudy line emissivity files and add them to the HDF5 grid
 
@@ -387,7 +387,13 @@ def add_elines(grid_name, synthesizer_data_dir):
         # delete lines group if it already exists
         if 'lines' in hf:
             del hf['lines']
-            
+
+        # define spectra
+        if include_spectra:
+            spectra = hf['spectra']
+            normalisation = spectra['normalisation'][:]
+            lam = spectra['wavelength'][:]
+
         # create group for holding lines
         lines = hf.create_group('lines')
         
@@ -400,13 +406,20 @@ def add_elines(grid_name, synthesizer_data_dir):
         line_ids = header.replace('\n','').split('\t')[1:]
         
          # save list of spectra as attribute
-        lines.attrs['lines'] = list(lines_to_include) 
+        lines.attrs['lines'] = list(line_ids) 
         
-        
+        # get TOTAL continuum spectra
+        if include_spectra:
+            nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
+            continuum = spectra['transmitted'][indices] + nebular_continuum
+    
 
         # set up output arrays
         for i, line_id in enumerate(line_ids):
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
+            lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
+            lines[f'{line_id}/continuum'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
@@ -431,7 +444,19 @@ def add_elines(grid_name, synthesizer_data_dir):
                 lines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dr)
 
 
+                if include_spectra:
 
+                    # calculate stellar continuum at the line wavelength and save it. 
+                    lines[f'{line_id}/stellar_continuum'][indices] = np.interp(
+                        wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
+                    
+                    # calculate nebular continuum at the line wavelength and save it. 
+                    lines[f'{line_id}/nebular_continuum'][indices] = np.interp(
+                        wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
+                    
+                    # calculate total continuum at the line wavelength and save it. 
+                    lines[f'{line_id}/continuum'][indices] = np.interp(
+                        wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
 
