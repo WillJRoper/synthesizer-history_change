@@ -354,7 +354,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
                   'units Angstroms no clobber\n'))
     
     if params['output_linelist']:
-        cinput.append(f'save linelist column emergent absolute last units angstroms "{model_name}.elin" "linelist.dat"')
+        cinput.append(f'save linelist column emergent absolute last units angstroms "{model_name}.elin" "linelist.dat"\n')
         # copy linelist
         shutil.copyfile(params['output_linelist'], f'{output_dir}/linelist.dat')
 
