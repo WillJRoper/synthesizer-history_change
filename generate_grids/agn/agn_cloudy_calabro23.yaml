@@ -23,4 +23,5 @@ log10n_H: [2.,3.,4.]
 output_cont: false
 resolution: 1.0 # energy resolution relative to the default
 output_line_emissivity: true
+output_linelist: linelist.dat
 iterate_to_convergence: false
