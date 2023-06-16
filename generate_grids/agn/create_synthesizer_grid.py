@@ -311,7 +311,9 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
         # open linelist to lineids
-        line_ids = np.loadtxt(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat')
+
+        with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat','r') as f:
+            line_ids = f.readlines()
 
         print(line_ids)
 
