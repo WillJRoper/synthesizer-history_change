@@ -297,8 +297,8 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
         axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties_hf(hf)
 
         # delete lines group if it already exists
-        if 'llines' in hf:
-            del hf['llines']
+        if 'lines' in hf:
+            del hf['lines']
 
         # define spectra
         if include_spectra:
@@ -307,11 +307,10 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
             lam = spectra['wavelength'][:]
             
         # create group for holding lines
-        lines = hf.create_group('llines')
+        lines = hf.create_group('lines')
         # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
 
-        # open linelist to lineids
-
+        # open linelist to get line ids
         with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat','r') as f:
             line_ids = f.readlines()
 
@@ -320,14 +319,11 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
         # set up output arrays
         for line_id in line_ids:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
-            # lines[f'{line_id}/intrinsic_luminosity'] = np.zeros(shape)
             lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
             lines[f'{line_id}/nebular_continuum'] = np.zeros(shape)
             lines[f'{line_id}/continuum'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
-
-            print(i, '-'*20)
 
             # convert indices array to tuple
             indices = tuple(indices)
@@ -350,8 +346,6 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
             for line_id, d_ in zip(line_ids,d):
 
                 lum = float(d_.split(' ')[-1])
-
-
 
                 lines[line_id]['luminosity'][indices] = lum  # erg s^-1 INCORRECT UNITS AT THE MOMENT
                 
@@ -387,25 +381,32 @@ def add_elines(grid_name, synthesizer_data_dir):
     # open the new grid
     with h5py.File(f'{synthesizer_data_dir}/grids/{grid_name}.hdf5', 'a') as hf:
 
-        
         # Get the properties of the grid including the dimensions etc.
         axes, n_axes, shape, n_models, mesh, model_list, index_list = get_grid_properties_hf(hf)
 
         # delete lines group if it already exists
-        if 'elines' in hf:
-            del hf['elines']
+        if 'lines' in hf:
+            del hf['lines']
             
         # create group for holding lines
-        elines = hf.create_group('elines')
-        # lines.attrs['lines'] = list(lines_to_include)  # save list of spectra as attribute
-
-        line_ids = ['H 1 6564.62A','H 1 4862.69A','N 2 6585.27A','O 3 5008.24A']
+        lines = hf.create_group('lines')
         
+        # open first grid point and extract line ids
         infile = f"{synthesizer_data_dir}/cloudy/{grid_name}/0.emis_intrinsic"
+
+        with open(infile, 'r') as f:
+            header = f.readlines()[0]
+
+        line_ids = header.replace('\n','').split('\t')[1:]
+        
+         # save list of spectra as attribute
+        lines.attrs['lines'] = list(lines_to_include) 
+        
+        
 
         # set up output arrays
         for i, line_id in enumerate(line_ids):
-            elines[f'{line_id}/luminosity'] = np.zeros(shape)
+            lines[f'{line_id}/luminosity'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
 
@@ -420,17 +421,15 @@ def add_elines(grid_name, synthesizer_data_dir):
             # depth into cloud
             depth = d[0]
             
+            # 
             dr = np.concatenate((np.array([depth[0]]), depth[1:]-depth[:-1]))
 
-            dv = dr*depth**2# volume of shell
-
-            for j, line_id in enumerate(line_ids):
-                elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dr)
-
+            # this might be needed for spherical geometry?
             # dv = dr*depth**2# volume of shell
 
-            # for j, line_id in enumerate(line_ids):
-            #     elines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dv)
+            for j, line_id in enumerate(line_ids):
+                lines[f'{line_id}/luminosity'][indices] = np.sum(d[j+1]*dr)
+
 
 
 
@@ -445,8 +444,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-synthesizer_data_dir", type=str, required=True) # path to synthesizer_data_dir
     parser.add_argument("-grid_name", "--grid_name", type=str, required=True)
+    parser.add_argument("-include_spectra", "--include_spectra", type=bool, default=False, required=False)
     parser.add_argument("-replace", "--replace", type=bool, default=False, required=False)
-    parser.add_argument("-include_spectra", "--include_spectra", type=bool, default=False)
+    parser.add_argument("-line_calc_method", "--line_calc_method", type=str, default='lines', required=False)
 
     args = parser.parse_args()
 
@@ -484,16 +484,22 @@ if __name__ == "__main__":
         #     add_spectra(grid_name, synthesizer_data_dir)
         #     print('- spectra added')
 
-        # get list of lines
-        lines_to_include = get_default_line_list()
+        if args.line_calc_method == 'lines':
 
-        # add lines
-        add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
-        print('- lines added')
+            # get list of lines
+            lines_to_include = get_default_line_list()
 
-        # add emission lines from .emis files
-        add_elines(grid_name, synthesizer_data_dir)
-        print('- elines added')
+            # add lines
+            add_lines(grid_name, synthesizer_data_dir, lines_to_include, include_spectra = include_spectra)
+            print('- lines added')
 
-        add_linelist(grid_name, synthesizer_data_dir, include_spectra = include_spectra)
-        print('- llines added')
+        if args.line_calc_method == 'elines':
+
+            # add emission lines from .emis files
+            add_elines(grid_name, synthesizer_data_dir)
+            print('- elines added')
+
+        if args.line_calc_method == 'llines':
+
+            add_linelist(grid_name, synthesizer_data_dir, include_spectra = include_spectra)
+            print('- llines added')
