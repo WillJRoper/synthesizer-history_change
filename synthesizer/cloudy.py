@@ -7,6 +7,10 @@ import numpy as np
 from scipy import integrate
 
 from unyt import c, h, angstrom, eV, erg, s, Hz, unyt_array
+import shutil
+
+
+
 
 
 from dataclasses import dataclass
@@ -183,6 +187,7 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         'output_abundances': True, # output abundances
         'output_cont': True, # output continuum
         'output_lines': True, # output lines
+        'output_linelist': False 
         'output_line_emissivity': False, # save line emissivities
         'iterate_to_convergence': True,
     }
@@ -348,6 +353,12 @@ def create_cloudy_input(model_name, shape_commands, abundances,
         cinput.append((f'save last lines, array "{model_name}.lines" '
                   'units Angstroms no clobber\n'))
     
+    if params['output_linelist']:
+        cinput.append(f'save linelist column emergent absolute last units angstroms "{model_name}.elin" "linelist.dat"')
+        # copy linelist
+        shutil.copyfile(params['output_linelist'], f'{output_dir}/linelist.dat')
+
+
     # output specific line emissivities
     if params['output_line_emissivity']:
         cinput.append(f'save last lines emissivity  "{model_name}.emis_intrinsic"\n')
