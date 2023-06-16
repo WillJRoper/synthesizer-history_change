@@ -351,7 +351,9 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
                 lum = float(d_.split(' ')[-1])
 
-                line['luminosity'][indices] = lum  # erg s^-1 INCORRECT UNITS AT THE MOMENT
+
+
+                lines[line_id]['luminosity'][indices] = lum  # erg s^-1 INCORRECT UNITS AT THE MOMENT
                 
                 if include_spectra:
 
