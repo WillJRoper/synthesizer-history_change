@@ -314,12 +314,8 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
 
         with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat','r') as f:
             line_ids = f.readlines()
-            
-        print(line_ids)
+
         line_ids = [line.replace('\n','') for line in line_ids]
-
-        print(line_ids)
-
 
         # set up output arrays
         for line_id in line_ids:
@@ -330,6 +326,8 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
             lines[f'{line_id}/continuum'] = np.zeros(shape)
 
         for i, indices in enumerate(index_list):
+
+            print(i, '-'*20)
 
             # convert indices array to tuple
             indices = tuple(indices)
@@ -342,41 +340,49 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
                 nebular_continuum = spectra['nebular'][indices] - spectra['linecont'][indices]
                 continuum = spectra['transmitted'][indices] + nebular_continuum
 
-            # get line quantities
-            id, blend, wavelength, intrinsic, emergent = read_lines(infile)
+            
+            # read file
 
-            # identify lines we want to keep
-            s = np.nonzero(np.in1d(id, np.array(lines_to_include)))[0]
+            with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/{i}.elin','r') as f:
+                d = f.readlines()
 
-            for id_, wavelength_, emergent_, intrinsic_ in zip(id[s], wavelength[s], emergent[s], intrinsic[s]):
+            d = d[1:]# trim first line
 
-                line = lines[id_]
+            for line_id, d_ in zip(line_ids,d):
+                print(line_id, d_.split(' ')[-1])
 
-                # save line wavelength
-                line.attrs['wavelength'] = wavelength_
 
-                if include_spectra:
-                    norm = normalisation[indices]
-                else:
-                    norm = 1.
+            
 
-                # calculate line luminosity and save it. Uses normalisation from spectra.
-                line['luminosity'][indices] = 10**(emergent_)/norm  # erg s^-1
-                line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/norm  # erg s^-1
+            # for id_, wavelength_, emergent_, intrinsic_ in zip(id[s], wavelength[s], emergent[s], intrinsic[s]):
+
+            #     line = lines[id_]
+
+            #     # save line wavelength
+            #     line.attrs['wavelength'] = wavelength_
+
+            #     if include_spectra:
+            #         norm = normalisation[indices]
+            #     else:
+            #         norm = 1.
+
+            #     # calculate line luminosity and save it. Uses normalisation from spectra.
+            #     line['luminosity'][indices] = 10**(emergent_)/norm  # erg s^-1
+            #     line['intrinsic_luminosity'][indices] = 10**(intrinsic_)/norm  # erg s^-1
                 
-                if include_spectra:
+            #     if include_spectra:
 
-                    # calculate stellar continuum at the line wavelength and save it. 
-                    line['stellar_continuum'][indices] = np.interp(
-                        wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
+            #         # calculate stellar continuum at the line wavelength and save it. 
+            #         line['stellar_continuum'][indices] = np.interp(
+            #             wavelength_, lam, spectra['transmitted'][indices])  # erg s^-1 Hz^-1
                     
-                    # calculate nebular continuum at the line wavelength and save it. 
-                    line['nebular_continuum'][indices] = np.interp(
-                        wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
+            #         # calculate nebular continuum at the line wavelength and save it. 
+            #         line['nebular_continuum'][indices] = np.interp(
+            #             wavelength_, lam, nebular_continuum)  # erg s^-1 Hz^-1
                     
-                    # calculate total continuum at the line wavelength and save it. 
-                    line['continuum'][indices] = np.interp(
-                        wavelength_, lam, continuum)  # erg s^-1 Hz^-1
+            #         # calculate total continuum at the line wavelength and save it. 
+            #         line['continuum'][indices] = np.interp(
+            #             wavelength_, lam, continuum)  # erg s^-1 Hz^-1
 
 
 
