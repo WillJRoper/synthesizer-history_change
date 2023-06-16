@@ -315,13 +315,14 @@ def add_linelist(grid_name, synthesizer_data_dir, include_spectra = True):
         with open(f'{synthesizer_data_dir}/cloudy/{grid_name}/linelist.dat','r') as f:
             line_ids = f.readlines()
             
+        print(line_ids)
         line_ids = [line.replace('\n','') for line in line_ids]
 
         print(line_ids)
 
 
         # set up output arrays
-        for line_id in lines_to_include:
+        for line_id in line_ids:
             lines[f'{line_id}/luminosity'] = np.zeros(shape)
             # lines[f'{line_id}/intrinsic_luminosity'] = np.zeros(shape)
             lines[f'{line_id}/stellar_continuum'] = np.zeros(shape)
