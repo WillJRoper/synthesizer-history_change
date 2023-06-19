@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
 
     grid_dir = '/Users/sw376/Dropbox/Research/data/synthesizer/grids'
-    grid_name = 'agn_cloudy'
+    grid_name = 'agn_cloudy_T_alpha_Z_U_nH'
 
     # load grid
     grid = Grid(grid_name, grid_dir=grid_dir)
@@ -27,10 +27,11 @@ if __name__ == '__main__':
 
     # define parameters of the grid point we're interested in
     params = {
-        'log10T': 5.,
+        'log10T': 6.,
+        'aox': -1.4,
         'log10Z': -2.,
         'log10U': -2.,
-        'log10n_H': 2.,
+        'log10n_H': 3.,
     }
 
     # get the grid point indices
@@ -57,7 +58,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-    
+    #############################
     # plot the spectra for the different temperatures at this grid point
 
     fig, ax = single((6., 3.5))
@@ -86,10 +87,12 @@ if __name__ == '__main__':
         # get the specific spectra at the desired grid point
         lnu = grid.spectra[spec_name][tuple(gpi)] # this is not an Sed object
 
+        lnu = lnu/np.interp(912., grid.lam, lnu)
+
         ax.plot(np.log10(grid.lam), np.log10(lnu), label = log10T, c=c)
 
     ax.set_xlim([2., 4.5])
-    ax.set_ylim([-20, -14.5])
+    ax.set_ylim([-2.,1.])
     ax.legend(fontsize = 8, labelspacing = 0.0, title=r'$\rm log_{10}(T/K)=$')
     ax.set_xlabel(r'$\rm log_{10}(\lambda/\AA)$')
     ax.set_ylabel(r'$\rm log_{10}(L_{\nu})$')

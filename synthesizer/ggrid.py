@@ -8,7 +8,7 @@ import h5py
 
 from . import __file__ as filepath
 from .sed import Sed, convert_fnu_to_flam
-from .line import Line, LineCollection
+from .lline import Line, LineCollection
 
 
 from collections.abc import Iterable
@@ -143,7 +143,7 @@ class Grid:
 
     """
 
-    def __init__(self, grid_name, grid_dir=None, verbose=False, read_spectra=True, read_lines=False):
+    def __init__(self, grid_name, grid_dir=None, verbose=False, read_spectra=True, read_lines=False, read_elines=False, read_llines=False):
 
         if not grid_dir:
             grid_dir = os.path.join(os.path.dirname(filepath), 'data/grids')
@@ -157,6 +157,7 @@ class Grid:
 
         self.spectra = None
         self.lines = None
+        self.elines = None
 
         # convert line list into flattend list and remove duplicates
         if isinstance(read_lines, list):
@@ -191,6 +192,14 @@ class Grid:
         # read in lines
         if read_lines:
             self.get_lines()
+
+        # read in llines
+        if read_llines:
+            self.get_llines()
+
+        # read in elines
+        if read_elines:
+            self.get_elines()
 
     def __str__(self):
         """
@@ -285,9 +294,12 @@ class Grid:
             for line in self.line_list:
 
                 self.lines[line] = {}
-                self.lines[line]['wavelength'] = hf['lines'][line].attrs['wavelength']  # angstrom
+                # self.lines[line]['wavelength'] = hf['lines'][line].attrs['wavelength']  # angstrom
                 self.lines[line]['luminosity'] = hf['lines'][line]['luminosity'][:]
                 self.lines[line]['continuum'] = hf['lines'][line]['continuum'][:]
+
+
+
 
     def get_nearest_index(self, value, array):
         """
@@ -402,13 +414,13 @@ class Grid:
 
         for line_id_ in line_id:
             line_ = self.lines[line_id_]
-            wavelength.append(line_['wavelength'])
+            # wavelength.append(line_['wavelength'])
             luminosity.append(line_['luminosity'][grid_point])
             continuum.append(line_['continuum'][grid_point])
 
         return Line(line_id, wavelength, luminosity, continuum)
 
-    def get_lines_info(self, line_ids, grid_point):
+    def get_lines_info(self, line_ids, grid_point, intrinsic = False):
         """
         Return a LineCollection object for a given line and metallicity/age index
         Parameters:
@@ -439,3 +451,6 @@ class Grid:
 
         # return collection
         return line_collection
+    
+
+    

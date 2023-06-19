@@ -86,7 +86,7 @@ grid = Grid(params['sps_grid'], grid_dir=grid_dir)
 Z = grid.metallicities[params['iZ']]
 
 # ---- initialise abundances object
-abundances = Abundances(Z=Z, alpha=params['alpha'], CO=params['CO'], d2m=params['d2m']) # abundances object
+abundances = Abundances(Z=0.3*0.02, alpha=params['alpha'], CO=params['CO'], d2m=params['d2m']) # abundances object
 
 
 lam = grid.lam

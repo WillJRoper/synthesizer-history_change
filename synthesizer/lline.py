@@ -69,11 +69,13 @@ def get_fancy_line_id(id):
         the fancy line id
     """
 
-    element, ion, wavelength = id.split(' ')
+    element, ion, wavelength = list(filter(None, id.split(' ')))
 
     wavelength = float(wavelength[:-1])
 
     return f'{element}{get_roman_numeral(int(ion))}{wavelength: .4g}'
+
+
 
 
 class LineRatios:
@@ -85,20 +87,20 @@ class LineRatios:
 
     def __init__(self):
 
-        O3 = ['O 3 4960.29A', 'O 3 5008.24A']
+        O3 = ['O 3 4960.29A', 'O  3 5006.84A']
         O2 = ['O 2 3727.09A', 'O 2 3729.88A']
-        Hb = 'H 1 4862.69A'
-        Ha = 'H 1 6564.62A'
+        Hb = 'H  1 4861.33A'
+        Ha = 'H  1 6562.81A'
 
         self.ratios = {}
 
         # Balmer decrement, should be ~2.86 for dust free
         self.ratios['BalmerDecrement'] = [[Ha], [Hb]]
-        self.ratios['N2'] = [['N 2 6585.27A'], [Ha]]  #  add reference
+        self.ratios['N2'] = [['N  2 6583.45A'], [Ha]]  #  add reference
         self.ratios['S2'] = [['S 2 6732.67A', 'S 2 6718.29A'], [Ha]]  #  add reference
         self.ratios['O1'] = [['O 1 6302.05A'], [Ha]]  #  add reference
         self.ratios['R2'] = [['O 2 3727.09A'], [Hb]]  #  add reference
-        self.ratios['R3'] = R3 = [['O 3 5008.24A'], [Hb]]  #  add reference
+        self.ratios['R3'] = R3 = [['O  3 5006.84A'], [Hb]]  #  add reference
         self.ratios['R23'] = [O3+O2, [Hb]]  #  add reference
         self.ratios['O32'] = [['O 3 5008.24A'], ['O 2 3727.09A']]  #  add reference
         self.ratios['Ne3O2'] = [['Ne 3 3968.59A'], ['O 2 3727.09A']]  #  add reference
@@ -107,7 +109,7 @@ class LineRatios:
 
         self.diagrams = {}
         self.diagrams['OHNO'] = [R3, [['Ne 3 3869.86A'], O2]]  #  add reference
-        self.diagrams['BPT-NII'] = [[['N 2 6585.27A'], [Ha]], R3]  #  add reference
+        self.diagrams['BPT-NII'] = [[['N  2 6583.45A'], [Ha]], R3]  #  add reference
         # diagrams['VO78'] = [[], []]
         # diagrams['unVO78'] = [[], []]
 

@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
 
     grid_dir = '/Users/sw376/Dropbox/Research/data/synthesizer/grids'
-    # grid_name = 'agn_cloudy'
-    grid_name = 'agn_feltre16'
+    grid_name = 'agn_cloudy_calabro23-lline'
+    # grid_name = 'agn_feltre16'
 
     # load grid
     grid = Grid(grid_name, grid_dir=grid_dir, read_lines=True)
